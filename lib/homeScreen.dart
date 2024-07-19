@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -10,6 +11,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<void> addUser() async {
     CollectionReference students =
@@ -36,10 +38,22 @@ class _HomeScreenState extends State<HomeScreen> {
     final Stream<QuerySnapshot> workoutData =
         FirebaseFirestore.instance.collection("Dadi").snapshots();
 
+    String? imageURL = auth.currentUser?.photoURL;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Lost And Found'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(''),
+            const Text('Lost And Found'),
+            CircleAvatar(
+              backgroundImage: NetworkImage(imageURL!),
+              backgroundColor: Colors.black,
+            ),
+          ],
+        ),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {

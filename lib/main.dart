@@ -4,8 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lost_and_found/homeScreen.dart';
-
-import 'loginremasterred.dart';
 import 'loginscreen.dart';
 
 void main() async {
