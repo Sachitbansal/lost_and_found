@@ -1,13 +1,45 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool isLoading = false;
+
+  Future<void> addUser() async {
+    CollectionReference students =
+        FirebaseFirestore.instance.collection("Dadi");
+    return students.add(
+      {
+        'month': DateTime.now().month,
+        'date': DateTime.now().day,
+        'year': DateTime.now().year,
+      },
+    ).then(
+      (value) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Added Successfully'),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final Stream<QuerySnapshot> workoutData =
+        FirebaseFirestore.instance.collection("Dadi").snapshots();
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Adaptive UI Example'),
+        centerTitle: true,
+        title: const Text('Lost And Found'),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -19,14 +51,124 @@ class HomeScreen extends StatelessWidget {
                   flex: 2,
                   child: Column(
                     children: [
-                      Expanded(child: Block(color: Colors.red, text: 'Block 1')),
-                      Expanded(child: Block(color: Colors.green, text: 'Block 2')),
+                      Expanded(
+                        child: Container(
+                          color: Colors.red,
+                          child: Center(
+                            child: TextButton(
+                              onPressed: () {
+                                addUser();
+                              },
+                              child: const Text('Firebase Adding'),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Block(
+                            color: Colors.green, text: 'Report a found item'),
+                      ),
                     ],
                   ),
                 ),
                 Expanded(
-                  flex: 1,
-                  child: Block(color: Colors.blue, text: 'Block 3'),
+                  child: Container(
+                    color: Colors.blue,
+                    child: Center(
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: workoutData,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Something Went Wrong.'),
+                              ),
+                            );
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          final List storeDocs = [];
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                            Map a = document.data() as Map<String, dynamic>;
+                            storeDocs.add(a);
+                            a['id'] = document.id;
+                            a['collection'] = document.reference;
+                          }).toList();
+
+                          if (isLoading) {
+                            return const Center(
+                              child: Text('Loading'),
+                            );
+                          } else {
+                            return Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 3,
+                                  color: Colors.blue,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              height: 100,
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: ListView(
+                                      physics: const BouncingScrollPhysics(),
+                                      children: [
+                                        for (var i = 0;
+                                            i < storeDocs.length;
+                                            i++) ...[
+                                          Table(
+                                            border: TableBorder.all(
+                                                color: Colors.black,
+                                                style: BorderStyle.solid,
+                                                width: 2),
+                                            children: [
+                                              TableRow(children: [
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                      storeDocs[i]['month']
+                                                          .toString(),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                      storeDocs[i]['date']
+                                                          .toString(),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                      storeDocs[i]['year']
+                                                          .toString(),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ]),
+                                            ],
+                                          )
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
                 ),
               ],
             );
@@ -34,9 +176,122 @@ class HomeScreen extends StatelessWidget {
             // Small screen layout
             return Column(
               children: [
-                Expanded(child: Block(color: Colors.red, text: 'Block 1')),
-                Expanded(child: Block(color: Colors.green, text: 'Block 2')),
-                Expanded(child: Block(color: Colors.blue, text: 'Block 3')),
+                Expanded(
+                  child: Container(
+                    color: Colors.red,
+                    child: Center(
+                      child: TextButton(
+                        onPressed: () {
+                          addUser();
+                        },
+                        child: const Text('Firebase Adding'),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child:
+                      Block(color: Colors.green, text: 'Report a found item'),
+                ),
+                Expanded(
+                  child: Container(
+                    color: Colors.blue,
+                    child: Center(
+                      child: StreamBuilder<QuerySnapshot>(
+                        stream: workoutData,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Something Went Wrong.'),
+                              ),
+                            );
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          final List storeDocs = [];
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                            Map a = document.data() as Map<String, dynamic>;
+                            storeDocs.add(a);
+                            a['id'] = document.id;
+                            a['collection'] = document.reference;
+                          }).toList();
+
+                          if (isLoading) {
+                            return const Center(
+                              child: Text('Loading'),
+                            );
+                          } else {
+                            return Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  width: 3,
+                                  color: Colors.blue,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              height: 100,
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: ListView(
+                                      physics: const BouncingScrollPhysics(),
+                                      children: [
+                                        for (var i = 0;
+                                            i < storeDocs.length;
+                                            i++) ...[
+                                          Table(
+                                            border: TableBorder.all(
+                                                color: Colors.black,
+                                                style: BorderStyle.solid,
+                                                width: 2),
+                                            children: [
+                                              TableRow(children: [
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                      storeDocs[i]['month']
+                                                          .toString(),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                      storeDocs[i]['date']
+                                                          .toString(),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                      storeDocs[i]['year']
+                                                          .toString(),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ]),
+                                            ],
+                                          )
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
               ],
             );
           }
