@@ -48,9 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const Text(''),
             const Text('Lost And Found'),
-            CircleAvatar(
-              backgroundImage: NetworkImage(imageURL!),
-              backgroundColor: Colors.black,
+            GestureDetector(
+              onTap: () {
+                auth.signOut();
+              },
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(imageURL!),
+                backgroundColor: Colors.black,
+              ),
             ),
           ],
         ),
