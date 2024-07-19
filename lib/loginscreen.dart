@@ -14,6 +14,22 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final auth = FirebaseAuth.instance;
 
+  Future<UserCredential> signInWithGoogle() async {
+    // Create a new provider
+    GoogleAuthProvider googleProvider = GoogleAuthProvider();
+
+    googleProvider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    googleProvider.setCustomParameters({
+      'login_hint': 'user@example.com'
+    });
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithPopup(googleProvider);
+
+    // Or use signInWithRedirect
+    // return await FirebaseAuth.instance.signInWithRedirect(googleProvider);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,35 +41,41 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           GestureDetector(
             onTap: () async {
-              // Trigger the authentication flow
-              final GoogleSignInAccount? googleUser =
-              await GoogleSignIn().signIn();
-              // Obtain the auth details from the request
-              final GoogleSignInAuthentication? googleAuth =
-              await googleUser?.authentication;
 
-              auth
-                  .signInWithCredential(
-                GoogleAuthProvider.credential(
-                  accessToken: googleAuth?.accessToken,
-                  idToken: googleAuth?.idToken,
-                ),
-              )
-                  .whenComplete(
-                    () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Logged in'),
-                    ),
-                  );
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomeScreen(),
-                    ),
-                  );
-                },
-              );
+              // ====================
+              // Trigger the authentication flow
+              // final GoogleSignInAccount? googleUser =
+              //     await GoogleSignIn().signIn();
+              // // Obtain the auth details from the request
+              // final GoogleSignInAuthentication? googleAuth =
+              //     await googleUser?.authentication;
+              //
+              // auth
+              //     .signInWithCredential(
+              //   GoogleAuthProvider.credential(
+              //     accessToken: googleAuth?.accessToken,
+              //     idToken: googleAuth?.idToken,
+              //   ),
+              // )
+              //     .whenComplete(
+              //   () {
+              //     ScaffoldMessenger.of(context).showSnackBar(
+              //       const SnackBar(
+              //         content: Text('Logged in'),
+              //       ),
+              //     );
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const HomeScreen(),
+              //       ),
+              //     );
+              //   },
+              // );
+              //===================
+
+              signInWithGoogle();
+
             },
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 10),

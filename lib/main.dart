@@ -69,23 +69,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  // Widget build(BuildContext context) {
-  //   return StreamBuilder(
-  //     stream: FirebaseAuth.instance.authStateChanges(),
-  //     builder: (context, snapshot) {
-  //       if (snapshot.hasData &&
-  //           FirebaseAuth.instance.currentUser!.emailVerified) {
-  //         return const HomeScreen();
-  //       } else {
-  //         return const LoginPage();
-  //       }
-  //     },
-  //   );
-  // }
-
   Widget build(BuildContext context) {
-    return const HomeScreen();
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData &&
+            FirebaseAuth.instance.currentUser!.emailVerified) {
+          return const HomeScreen();
+        } else {
+          return const LoginPage();
+        }
+      },
+    );
   }
+
+  // Widget build(BuildContext context) {
+  //   return const HomeScreen();
+  // }
 }
 
 
