@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'auth.dart';
 import 'homeScreen.dart';
 
 class LoginPage extends StatefulWidget {
@@ -34,6 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Login Page"),
       ),
@@ -41,38 +43,6 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           GestureDetector(
             onTap: () async {
-
-              // ====================
-              // Trigger the authentication flow
-              // final GoogleSignInAccount? googleUser =
-              //     await GoogleSignIn().signIn();
-              // // Obtain the auth details from the request
-              // final GoogleSignInAuthentication? googleAuth =
-              //     await googleUser?.authentication;
-              //
-              // auth
-              //     .signInWithCredential(
-              //   GoogleAuthProvider.credential(
-              //     accessToken: googleAuth?.accessToken,
-              //     idToken: googleAuth?.idToken,
-              //   ),
-              // )
-              //     .whenComplete(
-              //   () {
-              //     ScaffoldMessenger.of(context).showSnackBar(
-              //       const SnackBar(
-              //         content: Text('Logged in'),
-              //       ),
-              //     );
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) => const HomeScreen(),
-              //       ),
-              //     );
-              //   },
-              // );
-              //===================
 
               signInWithGoogle();
 
@@ -119,6 +89,87 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.blue, Colors.blueAccent, Colors.blueAccent, Colors.blue],
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  'Welcome',
+                  style: TextStyle(
+                    fontSize: 28.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                _buildGoogleLoginButton(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGoogleLoginButton() {
+    return ElevatedButton(
+      onPressed: () {
+        signInWithGoogle();
+      },
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black, backgroundColor: Colors.white,
+        elevation: 5,
+        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: Image.network(
+              'https://53.fs1.hubspotusercontent-na1.net/hub/53/hubfs/image8-2.jpg?width=893&height=600&name=image8-2.jpg',
+              height: 24.0,
+            ),
+          ),
+          const SizedBox(width: 10),
+          const Text(
+            'Login with Google',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.black54,
             ),
           ),
         ],

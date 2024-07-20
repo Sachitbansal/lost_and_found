@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lost_and_found/widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,6 +11,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final titleControllerLost = TextEditingController();
+  final titleControllerFound = TextEditingController();
+  final descriptionControllerLost = TextEditingController();
+  final descriptionControllerFound = TextEditingController();
+
+  late String categoryLost = 'None';
+  late String categoryFound = 'None';
+
+  @override
+  void dispose() {
+    titleControllerLost.dispose();
+    titleControllerFound.dispose();
+    descriptionControllerLost.dispose();
+    descriptionControllerFound.dispose();
+    super.dispose();
+  }
+
   bool isLoading = false;
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -18,9 +36,31 @@ class _HomeScreenState extends State<HomeScreen> {
         FirebaseFirestore.instance.collection("Dadi");
     return students.add(
       {
-        'month': DateTime.now().month,
-        'date': DateTime.now().day,
-        'year': DateTime.now().year,
+        'title': titleControllerLost.text,
+        'description': descriptionControllerLost.text,
+        'category': categoryLost,
+        'name': auth.currentUser?.displayName,
+      },
+    ).then(
+      (value) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Added Successfully'),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> addFound() async {
+    CollectionReference students =
+        FirebaseFirestore.instance.collection("Found");
+    return students.add(
+      {
+        'title': titleControllerFound.text,
+        'description': descriptionControllerFound.text,
+        'category': categoryLost,
+        'name': auth.currentUser?.displayName,
       },
     ).then(
       (value) {
@@ -37,6 +77,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> workoutData =
         FirebaseFirestore.instance.collection("Dadi").snapshots();
+    final Stream<QuerySnapshot> foundData =
+        FirebaseFirestore.instance.collection("Found").snapshots();
 
     String? imageURL = auth.currentUser?.photoURL;
 
@@ -46,14 +88,20 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(''),
+            Opacity(
+              opacity: 0,
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(imageURL!),
+                backgroundColor: Colors.black,
+              ),
+            ),
             const Text('Lost And Found'),
             GestureDetector(
               onTap: () {
                 auth.signOut();
               },
               child: CircleAvatar(
-                backgroundImage: NetworkImage(imageURL!),
+                backgroundImage: NetworkImage(imageURL),
                 backgroundColor: Colors.black,
               ),
             ),
@@ -66,35 +114,260 @@ class _HomeScreenState extends State<HomeScreen> {
             // Large screen layout
             return Row(
               children: [
-                Expanded(
-                  flex: 2,
+                Container(
+                  width: MediaQuery.of(context).size.width * .35,
                   child: Column(
                     children: [
                       Expanded(
                         child: Container(
-                          color: Colors.red,
-                          child: Center(
-                            child: TextButton(
-                              onPressed: () {
-                                addUser();
-                              },
-                              child: const Text('Firebase Adding'),
+                          color: Colors.blue[100],
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  const FilterTitle(
+                                    title: 'What did you loose?',
+                                  ),
+                                  CustomTextField(
+                                    titleController: titleControllerLost,
+                                    labelText: 'Title',
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Enter a Title';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const FilterTitle(
+                                    title: 'Description',
+                                  ),
+                                  CustomTextField(
+                                    maxLines: 4,
+                                    titleController: descriptionControllerLost,
+                                    labelText: 'Describe the lost item',
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Enter a Title';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            ButtonWithText(
+                                              onTap: () {
+                                                setState(() {
+                                                  categoryLost = 'Personal';
+                                                });
+                                              },
+                                              size: 80,
+                                              title: "Personal",
+                                              fontColor:
+                                                  categoryLost == 'Personal'
+                                                      ? Colors.white
+                                                      : Colors.blue[300],
+                                              bgColor:
+                                                  categoryLost == 'Personal'
+                                                      ? Colors.blue[400]
+                                                      : Colors.green[100],
+                                            ),
+                                            ButtonWithText(
+                                              onTap: () {
+                                                setState(() {
+                                                  categoryLost = 'Academic';
+                                                });
+                                              },
+                                              size: 80,
+                                              title: "Academic",
+                                              fontColor:
+                                                  categoryLost == 'Academic'
+                                                      ? Colors.white
+                                                      : Colors.blue[300],
+                                              bgColor:
+                                                  categoryLost == 'Academic'
+                                                      ? Colors.blue[400]
+                                                      : Colors.green[100],
+                                            ),
+                                            ButtonWithText(
+                                              onTap: () {
+                                                setState(() {
+                                                  categoryLost = 'Technical';
+                                                });
+                                              },
+                                              size: 80,
+                                              title: "Technical",
+                                              fontColor:
+                                                  categoryLost == 'Technical'
+                                                      ? Colors.white
+                                                      : Colors.blue[300],
+                                              bgColor:
+                                                  categoryLost == 'Technical'
+                                                      ? Colors.blue[400]
+                                                      : Colors.green[100],
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: Colors.blue[
+                                                  700]!, // red as border color
+                                            ),
+                                          ),
+                                          child: TextButton(
+                                            onPressed: () {
+                                              addUser();
+                                            },
+                                            child: Icon(Icons.add),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
                       Expanded(
-                        child: Block(
-                            color: Colors.green, text: 'Report a found item'),
+                        child: Container(
+                          color: Colors.pink[100],
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  const FilterTitle(
+                                    title: 'What did you find?',
+                                  ),
+                                  CustomTextField(
+                                    titleController: titleControllerFound,
+                                    labelText: 'Title',
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Enter a Title';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  const FilterTitle(
+                                    title: 'Description',
+                                  ),
+                                  CustomTextField(
+                                    maxLines: 4,
+                                    titleController: descriptionControllerFound,
+                                    labelText:
+                                        'Describe the found item and where did you find it',
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please Enter a Title';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            ButtonWithText(
+                                              onTap: () {
+                                                setState(() {
+                                                  categoryFound = 'Personal';
+                                                });
+                                              },
+                                              size: 80,
+                                              title: "Personal",
+                                              fontColor:
+                                                  categoryFound == 'Personal'
+                                                      ? Colors.white
+                                                      : Colors.blue[300],
+                                              bgColor:
+                                                  categoryFound == 'Personal'
+                                                      ? Colors.blue[400]
+                                                      : Colors.green[100],
+                                            ),
+                                            ButtonWithText(
+                                              onTap: () {
+                                                setState(() {
+                                                  categoryFound = 'Academic';
+                                                });
+                                              },
+                                              size: 80,
+                                              title: "Academic",
+                                              fontColor:
+                                                  categoryFound == 'Academic'
+                                                      ? Colors.white
+                                                      : Colors.blue[300],
+                                              bgColor:
+                                                  categoryFound == 'Academic'
+                                                      ? Colors.blue[400]
+                                                      : Colors.green[100],
+                                            ),
+                                            ButtonWithText(
+                                              onTap: () {
+                                                setState(() {
+                                                  categoryFound = 'Technical';
+                                                });
+                                              },
+                                              size: 80,
+                                              title: "Technical",
+                                              fontColor:
+                                                  categoryFound == 'Technical'
+                                                      ? Colors.white
+                                                      : Colors.blue[300],
+                                              bgColor:
+                                                  categoryFound == 'Technical'
+                                                      ? Colors.blue[400]
+                                                      : Colors.green[100],
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: Colors.blue[
+                                                  700]!, // red as border color
+                                            ),
+                                          ),
+                                          child: TextButton(
+                                            onPressed: () {
+                                              addFound();
+                                            },
+                                            child: Icon(Icons.add),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Expanded(
-                  child: Container(
-                    color: Colors.blue,
-                    child: Center(
-                      child: StreamBuilder<QuerySnapshot>(
+                  child: Column(
+                    children: [
+                      StreamBuilder<QuerySnapshot>(
                         stream: workoutData,
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -125,14 +398,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           } else {
                             return Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 3,
-                                  color: Colors.blue,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              height: 100,
+                              color: Colors.blue[400],
+                              height: MediaQuery.of(context).size.height * .46,
                               child: Column(
                                 children: [
                                   Expanded(
@@ -142,40 +409,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         for (var i = 0;
                                             i < storeDocs.length;
                                             i++) ...[
-                                          Table(
-                                            border: TableBorder.all(
-                                                color: Colors.black,
-                                                style: BorderStyle.solid,
-                                                width: 2),
-                                            children: [
-                                              TableRow(children: [
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      storeDocs[i]['month']
-                                                          .toString(),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      storeDocs[i]['date']
-                                                          .toString(),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      storeDocs[i]['year']
-                                                          .toString(),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ]),
-                                            ],
-                                          )
+                                          CustomBlockWidget(
+                                            task: 'lost',
+                                            title: storeDocs[i]['title'],
+                                            name: storeDocs[i]['name'],
+                                            description: storeDocs[i]
+                                                ['description'],
+                                            category: storeDocs[i]['category'],
+                                          ),
                                         ],
                                       ],
                                     ),
@@ -186,155 +427,213 @@ class _HomeScreenState extends State<HomeScreen> {
                           }
                         },
                       ),
-                    ),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: foundData,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Something Went Wrong.'),
+                              ),
+                            );
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+                          final List storeDocs = [];
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                            Map a = document.data() as Map<String, dynamic>;
+                            storeDocs.add(a);
+                            a['id'] = document.id;
+                            a['collection'] = document.reference;
+                          }).toList();
+
+                          if (isLoading) {
+                            return const Center(
+                              child: Text('Loading'),
+                            );
+                          } else {
+                            return Container(
+                              color: Colors.pink[300],
+                              height: MediaQuery.of(context).size.height * .46,
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: ListView(
+                                      physics: const BouncingScrollPhysics(),
+                                      children: [
+                                        for (var i = 0;
+                                            i < storeDocs.length;
+                                            i++) ...[
+                                          CustomBlockWidget(
+                                            task: 'found',
+                                            title: storeDocs[i]['title'],
+                                            name: storeDocs[i]['name'],
+                                            description: storeDocs[i]
+                                                ['description'],
+                                            category: storeDocs[i]['category'],
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],
             );
           } else {
             // Small screen layout
-            return Column(
-              children: [
-                Expanded(
-                  child: Container(
-                    color: Colors.red,
-                    child: Center(
-                      child: TextButton(
-                        onPressed: () {
-                          addUser();
-                        },
-                        child: const Text('Firebase Adding'),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child:
-                      Block(color: Colors.green, text: 'Report a found item'),
-                ),
-                Expanded(
-                  child: Container(
-                    color: Colors.blue,
-                    child: Center(
-                      child: StreamBuilder<QuerySnapshot>(
-                        stream: workoutData,
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.hasError) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Something Went Wrong.'),
-                              ),
-                            );
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                          final List storeDocs = [];
-                          snapshot.data!.docs.map((DocumentSnapshot document) {
-                            Map a = document.data() as Map<String, dynamic>;
-                            storeDocs.add(a);
-                            a['id'] = document.id;
-                            a['collection'] = document.reference;
-                          }).toList();
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  StreamBuilder<QuerySnapshot>(
+                    stream: workoutData,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Something Went Wrong.'),
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      final List storeDocs = [];
+                      snapshot.data!.docs.map((DocumentSnapshot document) {
+                        Map a = document.data() as Map<String, dynamic>;
+                        storeDocs.add(a);
+                        a['id'] = document.id;
+                        a['collection'] = document.reference;
+                      }).toList();
 
-                          if (isLoading) {
-                            return const Center(
-                              child: Text('Loading'),
-                            );
-                          } else {
-                            return Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 3,
-                                  color: Colors.blue,
+                      if (isLoading) {
+                        return const Center(
+                          child: Text('Loading'),
+                        );
+                      } else {
+                        return Container(
+                          color: Colors.blue[400],
+                          height: MediaQuery.of(context).size.height * .46,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: ListView(
+                                  physics: const BouncingScrollPhysics(),
+                                  children: [
+                                    for (var i = 0;
+                                        i < storeDocs.length;
+                                        i++) ...[
+                                      CustomBlockWidget(
+                                        task: 'lost',
+                                        title: storeDocs[i]['title'],
+                                        name: storeDocs[i]['name'],
+                                        description: storeDocs[i]
+                                            ['description'],
+                                        category: storeDocs[i]['category'],
+                                      ),
+                                    ],
+                                  ],
                                 ),
-                                borderRadius: BorderRadius.circular(10.0),
                               ),
-                              height: 100,
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: ListView(
-                                      physics: const BouncingScrollPhysics(),
-                                      children: [
-                                        for (var i = 0;
-                                            i < storeDocs.length;
-                                            i++) ...[
-                                          Table(
-                                            border: TableBorder.all(
-                                                color: Colors.black,
-                                                style: BorderStyle.solid,
-                                                width: 2),
-                                            children: [
-                                              TableRow(children: [
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      storeDocs[i]['month']
-                                                          .toString(),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      storeDocs[i]['date']
-                                                          .toString(),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Column(
-                                                  children: [
-                                                    Text(
-                                                      storeDocs[i]['year']
-                                                          .toString(),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ]),
-                                            ],
-                                          )
-                                        ],
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
                   ),
-                ),
-              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Add()),
+                          );
+                        },
+                        child: const Text('Report Lost or Found Item'),
+                      ),
+                    ],
+                  ),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: foundData,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Something Went Wrong.'),
+                          ),
+                        );
+                      }
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      final List storeDocs = [];
+                      snapshot.data!.docs.map((DocumentSnapshot document) {
+                        Map a = document.data() as Map<String, dynamic>;
+                        storeDocs.add(a);
+                        a['id'] = document.id;
+                        a['collection'] = document.reference;
+                      }).toList();
+
+                      if (isLoading) {
+                        return const Center(
+                          child: Text('Loading'),
+                        );
+                      } else {
+                        return Container(
+                          color: Colors.pink[300],
+                          height: MediaQuery.of(context).size.height * .46,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: ListView(
+                                  physics: const BouncingScrollPhysics(),
+                                  children: [
+                                    for (var i = 0;
+                                        i < storeDocs.length;
+                                        i++) ...[
+                                      CustomBlockWidget(
+                                        task: 'found',
+                                        title: storeDocs[i]['title'],
+                                        name: storeDocs[i]['name'],
+                                        description: storeDocs[i]
+                                            ['description'],
+                                        category: storeDocs[i]['category'],
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             );
           }
         },
-      ),
-    );
-  }
-}
-
-class Block extends StatelessWidget {
-  final Color color;
-  final String text;
-
-  Block({required this.color, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: color,
-      child: Center(
-        child: Text(
-          text,
-          style: TextStyle(color: Colors.white, fontSize: 24),
-        ),
       ),
     );
   }

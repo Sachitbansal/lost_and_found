@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Lost and Found',
       theme: ThemeData(
         // This is the theme of your application.
@@ -75,15 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
             FirebaseAuth.instance.currentUser!.emailVerified) {
           return const HomeScreen();
         } else {
-          return const LoginPage();
+          return const LoginScreen();
         }
       },
     );
   }
 
-  // Widget build(BuildContext context) {
-  //   return const HomeScreen();
-  // }
 }
 
 
