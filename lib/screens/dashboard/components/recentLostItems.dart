@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 import '../../../constants.dart';
-import '../../../models/RecentFile.dart';
+import '../../../models/recentLostItemData.dart';
 
 class RecentLostItems extends StatefulWidget {
   const RecentLostItems({
@@ -32,7 +32,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
           SizedBox(
             width: double.infinity,
             child: DataTable(
-              columnSpacing: defaultPadding,
+              columnSpacing: defaultPadding/2,
               // minWidth: 600,
               columns: const [
                 DataColumn(
@@ -62,14 +62,16 @@ DataRow recentFileDataRow(RecentFile fileInfo) {
     cells: [
       DataCell(
         Row(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SvgPicture.asset(
               fileInfo.icon!,
-              height: 30,
-              width: 30,
+              height: 25,
+              width: 25,
             ),
+            SizedBox(width: 5,),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+              padding: const EdgeInsets.symmetric(horizontal: 0),
               child: Text(
                 fileInfo.title!,
                 overflow: TextOverflow.ellipsis,

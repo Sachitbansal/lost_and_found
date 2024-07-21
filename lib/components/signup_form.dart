@@ -8,7 +8,7 @@ class SignUpForm extends StatelessWidget {
     super.key,
   });
 
-  final auth = FirebaseAuth.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<UserCredential> signInWithGoogle() async {
     // Create a new provider
