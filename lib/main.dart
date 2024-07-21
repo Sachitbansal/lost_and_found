@@ -3,8 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:lost_and_found/homeScreen.dart';
-import 'loginscreen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lost_and_found/screens/SignUp/signup_screen.dart';
+import 'package:lost_and_found/screens/dashboard/dashboard_screen.dart';
+import 'package:lost_and_found/screens/main/main_screen.dart';
+import 'package:provider/provider.dart';
+import 'constants.dart';
+import 'controllers/MenuAppController.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,15 +35,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Lost and Found',
-      theme: ThemeData(
-        // This is the theme of your application.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => MenuAppController(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Lost and Found',
+        theme: ThemeData.dark().copyWith(
+          scaffoldBackgroundColor: bgColor,
+          textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)
+              .apply(bodyColor: Colors.white),
+          canvasColor: secondaryColor,
+        ),
+        home: const MyHomePage(title: 'Lost And Found'),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -74,9 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context, snapshot) {
         if (snapshot.hasData &&
             FirebaseAuth.instance.currentUser!.emailVerified) {
-          return const HomeScreen();
+          return const MainScreen();
         } else {
-          return const LoginScreen();
+          return const SignUpScreen();
         }
       },
     );

@@ -97,6 +97,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const Text('Lost And Found'),
             GestureDetector(
+              onDoubleTap: () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => const SecondRoute()),
+                // );
+              },
               onTap: () {
                 auth.signOut();
               },
