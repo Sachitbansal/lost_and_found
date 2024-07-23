@@ -17,8 +17,6 @@ class MenuAppController extends ChangeNotifier {
     }
   }
 
-  final User? currentUser = FirebaseAuth.instance.currentUser;
-
   int _pageIndex = 0;
 
   final List<String> _headerTitle = [
@@ -36,7 +34,8 @@ class MenuAppController extends ChangeNotifier {
 
   final List<Widget> _mainScreenWidgets = [
     const HomeScreen(),
-    const AddLostScreen()
+    const AddLostScreen(),
+    const AddLostScreen(),
   ];
 
   final List<String> _categoryList = [
@@ -68,19 +67,5 @@ class MenuAppController extends ChangeNotifier {
   void changeCategory(String category) {
     _selectedCategory = category;
     notifyListeners();
-  }
-
-  Future<Future<DocumentReference<Object?>>> addLost(
-      String title, String description) async {
-    CollectionReference lostData =
-        FirebaseFirestore.instance.collection("Dadi");
-    return lostData.add({
-      'title': title,
-      'description': description,
-      'category': selectedCategory,
-      'name': currentUser?.displayName,
-      'email': currentUser?.email,
-      'phone': currentUser?.phoneNumber
-    });
   }
 }

@@ -39,7 +39,12 @@ class TopBlocksCard extends StatelessWidget {
           // ),
           IconButton(
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(info.color)
+              backgroundColor: WidgetStateProperty.all(info.color),
+              shape: WidgetStateProperty.all(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
             ),
             // color: info.color,
             onPressed: null,
