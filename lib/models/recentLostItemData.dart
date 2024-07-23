@@ -8,25 +8,25 @@ List demoRecentItems = [
   RecentFile(
     icon: "assets/icons/xd_file.svg",
     title: "Calculator",
-    date: "21-07-2024",
+    date: "21/7/24",
     size: "Technical",
   ),
   RecentFile(
     icon: "assets/icons/Figma_file.svg",
     title: "Nike Shoes",
-    date: "20-07-2024",
+    date: "20/7/24",
     size: "Personal",
   ),
   RecentFile(
     icon: "assets/icons/doc_file.svg",
     title: "Waist Belt",
-    date: "23-07-2024",
+    date: "23/7/24",
     size: "Personal",
   ),
   RecentFile(
     icon: "assets/icons/sound_file.svg",
     title: "Physics Register",
-    date: "22-07-2024",
+    date: "22/7/24",
     size: "Academic",
   ),
   // RecentFile(

@@ -1,25 +1,33 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../constants.dart';
+import '../../../widgets.dart';
 
 class RecentFoundItems extends StatefulWidget {
   const RecentFoundItems({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<RecentFoundItems> createState() => _RecentFoundItemsState();
 }
 
 class _RecentFoundItemsState extends State<RecentFoundItems> {
+  bool isLoading = false;
+
+  final Stream<QuerySnapshot> foundData =
+  FirebaseFirestore.instance.collection("Found").snapshots();
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(defaultPadding),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.all(defaultPadding),
+      decoration: const BoxDecoration(
         color: secondaryColor,
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,33 +36,70 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
             "Recent Lost Items",
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          ItemsBlock(
-            asset: [
-              "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
-            ],
-            name: "Calculator",
-            location: 'Hostel',
-            bedCount: '5',
-            share: null,
-            bathCount: '4',
-            onTap: null,
-            bookmarkFunction: null,
-            bookmarkIcon: false,
-            isSelected: (bool value) {},
-          ),
-          ItemsBlock(
-            asset: [
-              "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
-            ],
-            name: "Calculator",
-            location: 'Hostel',
-            bedCount: '5',
-            share: null,
-            bathCount: '4',
-            onTap: null,
-            bookmarkFunction: null,
-            bookmarkIcon: false,
-            isSelected: (bool value) {},
+          StreamBuilder<QuerySnapshot>(
+            stream: foundData,
+            builder: (BuildContext context,
+                AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Something Went Wrong.'),
+                  ),
+                );
+              }
+              if (snapshot.connectionState ==
+                  ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              final List storeDocs = [];
+              snapshot.data!.docs.map((DocumentSnapshot document) {
+                Map a = document.data() as Map<String, dynamic>;
+                storeDocs.add(a);
+                a['id'] = document.id;
+                a['collection'] = document.reference;
+              }).toList();
+
+              if (isLoading) {
+                return const Center(
+                  child: Text('Loading'),
+                );
+              } else {
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height * .46,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView(
+                          physics: const BouncingScrollPhysics(),
+                          children: [
+                            for (var i = 0;
+                            i < storeDocs.length;
+                            i++) ...[
+                              ItemsBlock(
+                                asset: const [
+                                  "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
+                                ],
+                                name: storeDocs[i]['title'],
+                                location: storeDocs[i]['name'],
+                                bedCount: '5',
+                                share: null,
+                                bathCount: '4',
+                                onTap: null,
+                                bookmarkFunction: null,
+                                bookmarkIcon: false,
+                                isSelected: (bool value) {},
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
           ),
           // SizedBox(
           //   width: double.infinity,
@@ -86,7 +131,7 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
 
 class ItemsBlock extends StatefulWidget {
   const ItemsBlock({
-    Key? key,
+    super.key,
     required this.asset,
     required this.name,
     required this.location,
@@ -98,7 +143,8 @@ class ItemsBlock extends StatefulWidget {
     required this.bookmarkIcon,
     required this.isSelected,
     this.usage,
-  }) : super(key: key);
+  });
+
   final List asset;
   final String location, bedCount, name, bathCount;
   final String? usage;
@@ -116,12 +162,12 @@ class _ItemsBlockState extends State<ItemsBlock> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(defaultPadding / 2),
+      padding: const EdgeInsets.all(defaultPadding / 2),
       child: GestureDetector(
         onTap: widget.onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: Color(0xFF293752),
+            color: Colors.black26,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
@@ -131,12 +177,13 @@ class _ItemsBlockState extends State<ItemsBlock> {
                 height: 100,
                 width: 100,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                        image: NetworkImage(widget.asset[0]),
-                        fit: BoxFit.fitWidth)),
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      image: NetworkImage(widget.asset[0]),
+                      fit: BoxFit.fitWidth),
+                ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
               Expanded(

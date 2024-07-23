@@ -40,11 +40,11 @@ class MyFiles extends StatelessWidget {
         Responsive(
           mobile: FileInfoCardGridView(
             crossAxisCount: _size.width < 650 ? 2 : 4,
-            childAspectRatio: _size.width < 650 && _size.width > 350 ? 1.9: 1,
+            childAspectRatio: _size.width < 650 && _size.width > 350 ? 1.5: 1,
           ),
           tablet: FileInfoCardGridView(),
           desktop: FileInfoCardGridView(
-            childAspectRatio: _size.width < 1400 ? 1.1 : 2,
+            childAspectRatio: _size.width < 1400 ? 1.1 : 1.9,
           ),
         ),
       ],
@@ -56,7 +56,7 @@ class FileInfoCardGridView extends StatelessWidget {
   const FileInfoCardGridView({
     Key? key,
     this.crossAxisCount = 4,
-    this.childAspectRatio = 1.4,
+    this.childAspectRatio = 1.142,
   }) : super(key: key);
 
   final int crossAxisCount;
@@ -65,7 +65,7 @@ class FileInfoCardGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemCount: demoMyFiles.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

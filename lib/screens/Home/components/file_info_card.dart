@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../constants.dart';
 import '../../../models/MyFiles.dart';
 
@@ -13,7 +14,7 @@ class FileInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(defaultPadding),
+      padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(
         color: secondaryColor,
         borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -22,26 +23,46 @@ class FileInfoCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            padding: EdgeInsets.all(defaultPadding * 0.75),
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              color: info.color!.withOpacity(0.1),
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
+          // Expanded(
+          //   child: Container(
+          //     padding: const EdgeInsets.all(defaultPadding * 0.75),
+          //     decoration: BoxDecoration(
+          //       color: info.color!.withOpacity(0.1),
+          //       borderRadius: const BorderRadius.all(Radius.circular(10)),
+          //     ),
+          //     child: IconButton(
+          //       onPressed: null,
+          //       icon: Icon(
+          //         info.icon
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          IconButton(
+            style: ButtonStyle(
+              backgroundColor:  WidgetStateProperty.all(info.color)
             ),
-            child: IconButton(
-              onPressed: null,
-              icon: Icon(
-                info.icon
-              ),
+            // color: info.color,
+            onPressed: null,
+            icon: Icon(
+              info.icon,
+              color: Colors.white,
             ),
           ),
-          Text(
-            info.title!,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          SizedBox(height: 10,),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              info.title!,
+              overflow: TextOverflow.ellipsis,
+              softWrap: false,
+            ),
           ),
+          // Text(
+          //   info.title!,
+          //   maxLines: 1,
+          //   overflow: TextOverflow.ellipsis,
+          // ),
           // ProgressLine(
           //   color: info.color,
           //   percentage: info.percentage,
@@ -73,10 +94,10 @@ class FileInfoCard extends StatelessWidget {
 
 class ProgressLine extends StatelessWidget {
   const ProgressLine({
-    Key? key,
+    super.key,
     this.color = primaryColor,
     required this.percentage,
-  }) : super(key: key);
+  });
 
   final Color? color;
   final int? percentage;

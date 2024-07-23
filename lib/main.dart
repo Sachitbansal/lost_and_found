@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lost_and_found/screens/SignUp/signup_screen.dart';
-import 'package:lost_and_found/screens/dashboard/dashboard_screen.dart';
 import 'package:lost_and_found/screens/main/main_screen.dart';
 import 'package:provider/provider.dart';
 import 'constants.dart';
