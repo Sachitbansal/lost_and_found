@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lost_and_found/constants.dart';
 
 class Block extends StatelessWidget {
   final Color color;
@@ -26,7 +27,7 @@ class Block extends StatelessWidget {
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
-    Key? key,
+    super.key,
     this.titleController,
     required this.labelText,
     this.validator,
@@ -34,7 +35,7 @@ class CustomTextField extends StatelessWidget {
     this.onChanged,
     this.icon,
     this.maxLines,
-  }) : super(key: key);
+  });
 
   final TextEditingController? titleController;
   final String labelText;
@@ -50,22 +51,21 @@ class CustomTextField extends StatelessWidget {
       maxLines: maxLines,
       onChanged: onChanged,
       keyboardType: keyboardType,
-      cursorColor: Colors.blue[300],
       decoration: InputDecoration(
         suffixIcon: icon,
         isCollapsed: true,
         fillColor: Colors.blue[200]?.withOpacity(0.05),
         contentPadding:
-        const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10),
+            const EdgeInsets.symmetric(vertical: 15.0, horizontal: 10),
         filled: true,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(5),
           borderSide: const BorderSide(width: 0.8),
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: const OutlineInputBorder(
           borderSide: BorderSide(
             width: 0.8,
-            color: Colors.blue[300]!,
+            color: primaryColor,
           ),
         ),
         labelText: labelText,
@@ -78,9 +78,10 @@ class CustomTextField extends StatelessWidget {
 
 class FilterTitle extends StatelessWidget {
   const FilterTitle({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
+
   final String title;
 
   @override
@@ -106,14 +107,15 @@ class FilterTitle extends StatelessWidget {
 }
 
 class ButtonWithText extends StatelessWidget {
-  const ButtonWithText(
-      {Key? key,
-        required this.onTap,
-        this.size,
-        required this.title,
-        required this.bgColor,
-        required this.fontColor})
-      : super(key: key);
+  const ButtonWithText({
+    super.key,
+    required this.onTap,
+    this.size,
+    required this.title,
+    required this.bgColor,
+    required this.fontColor,
+  });
+
   final void Function() onTap;
   final double? size;
   final String title;
@@ -123,24 +125,27 @@ class ButtonWithText extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        margin: EdgeInsets.all(5),
-        width: size,
-        height: 40,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue[200]!),
-          color: bgColor,
-          borderRadius: BorderRadius.circular(15.0),
-        ),
-        child: Center(
-          child: Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.play(
-              color: fontColor,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
+      child: Padding(
+        padding:
+            const EdgeInsets.fromLTRB(0, defaultPadding, defaultPadding, 0),
+        child: Container(
+          width: size,
+          height: 40,
+          decoration: BoxDecoration(
+            border: Border.all(color: primaryColor),
+            color: bgColor,
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Center(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.play(
+                color: fontColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+              ),
             ),
           ),
         ),
@@ -202,7 +207,6 @@ class CustomBlockWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-
         ],
       ),
     );
@@ -217,7 +221,6 @@ class Add extends StatefulWidget {
 }
 
 class _AddState extends State<Add> {
-
   final titleControllerLost = TextEditingController();
   final titleControllerFound = TextEditingController();
   final descriptionControllerLost = TextEditingController();
@@ -240,7 +243,7 @@ class _AddState extends State<Add> {
 
   Future<void> addUser() async {
     CollectionReference students =
-    FirebaseFirestore.instance.collection("Dadi");
+        FirebaseFirestore.instance.collection("Dadi");
     return students.add(
       {
         'title': titleControllerLost.text,
@@ -249,7 +252,7 @@ class _AddState extends State<Add> {
         'name': auth.currentUser?.displayName,
       },
     ).then(
-          (value) {
+      (value) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Added Successfully'),
@@ -261,7 +264,7 @@ class _AddState extends State<Add> {
 
   Future<void> addFound() async {
     CollectionReference students =
-    FirebaseFirestore.instance.collection("Found");
+        FirebaseFirestore.instance.collection("Found");
     return students.add(
       {
         'title': titleControllerFound.text,
@@ -270,7 +273,7 @@ class _AddState extends State<Add> {
         'name': auth.currentUser?.displayName,
       },
     ).then(
-          (value) {
+      (value) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Added Successfully'),
@@ -280,14 +283,11 @@ class _AddState extends State<Add> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Report'
-        ),
+        title: Text('Report'),
       ),
       body: Column(
         children: [
@@ -329,8 +329,7 @@ class _AddState extends State<Add> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               children: [
@@ -342,12 +341,10 @@ class _AddState extends State<Add> {
                                   },
                                   size: 80,
                                   title: "Personal",
-                                  fontColor:
-                                  categoryLost == 'Personal'
+                                  fontColor: categoryLost == 'Personal'
                                       ? Colors.white
                                       : Colors.blue[300],
-                                  bgColor:
-                                  categoryLost == 'Personal'
+                                  bgColor: categoryLost == 'Personal'
                                       ? Colors.blue[400]
                                       : Colors.green[100],
                                 ),
@@ -359,12 +356,10 @@ class _AddState extends State<Add> {
                                   },
                                   size: 80,
                                   title: "Academic",
-                                  fontColor:
-                                  categoryLost == 'Academic'
+                                  fontColor: categoryLost == 'Academic'
                                       ? Colors.white
                                       : Colors.blue[300],
-                                  bgColor:
-                                  categoryLost == 'Academic'
+                                  bgColor: categoryLost == 'Academic'
                                       ? Colors.blue[400]
                                       : Colors.green[100],
                                 ),
@@ -376,12 +371,10 @@ class _AddState extends State<Add> {
                                   },
                                   size: 80,
                                   title: "Technical",
-                                  fontColor:
-                                  categoryLost == 'Technical'
+                                  fontColor: categoryLost == 'Technical'
                                       ? Colors.white
                                       : Colors.blue[300],
-                                  bgColor:
-                                  categoryLost == 'Technical'
+                                  bgColor: categoryLost == 'Technical'
                                       ? Colors.blue[400]
                                       : Colors.green[100],
                                 ),
@@ -389,11 +382,10 @@ class _AddState extends State<Add> {
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                borderRadius:
-                                BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: Colors.blue[
-                                  700]!, // red as border color
+                                  color:
+                                      Colors.blue[700]!, // red as border color
                                 ),
                               ),
                               child: TextButton(
@@ -440,7 +432,7 @@ class _AddState extends State<Add> {
                         maxLines: 4,
                         titleController: descriptionControllerFound,
                         labelText:
-                        'Describe the found item and where did you find it',
+                            'Describe the found item and where did you find it',
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please Enter a Title';
@@ -451,8 +443,7 @@ class _AddState extends State<Add> {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               children: [
@@ -464,12 +455,10 @@ class _AddState extends State<Add> {
                                   },
                                   size: 80,
                                   title: "Personal",
-                                  fontColor:
-                                  categoryFound == 'Personal'
+                                  fontColor: categoryFound == 'Personal'
                                       ? Colors.white
                                       : Colors.blue[300],
-                                  bgColor:
-                                  categoryFound == 'Personal'
+                                  bgColor: categoryFound == 'Personal'
                                       ? Colors.blue[400]
                                       : Colors.green[100],
                                 ),
@@ -481,12 +470,10 @@ class _AddState extends State<Add> {
                                   },
                                   size: 80,
                                   title: "Academic",
-                                  fontColor:
-                                  categoryFound == 'Academic'
+                                  fontColor: categoryFound == 'Academic'
                                       ? Colors.white
                                       : Colors.blue[300],
-                                  bgColor:
-                                  categoryFound == 'Academic'
+                                  bgColor: categoryFound == 'Academic'
                                       ? Colors.blue[400]
                                       : Colors.green[100],
                                 ),
@@ -498,12 +485,10 @@ class _AddState extends State<Add> {
                                   },
                                   size: 80,
                                   title: "Technical",
-                                  fontColor:
-                                  categoryFound == 'Technical'
+                                  fontColor: categoryFound == 'Technical'
                                       ? Colors.white
                                       : Colors.blue[300],
-                                  bgColor:
-                                  categoryFound == 'Technical'
+                                  bgColor: categoryFound == 'Technical'
                                       ? Colors.blue[400]
                                       : Colors.green[100],
                                 ),
@@ -511,11 +496,10 @@ class _AddState extends State<Add> {
                             ),
                             Container(
                               decoration: BoxDecoration(
-                                borderRadius:
-                                BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: Colors.blue[
-                                  700]!, // red as border color
+                                  color:
+                                      Colors.blue[700]!, // red as border color
                                 ),
                               ),
                               child: TextButton(

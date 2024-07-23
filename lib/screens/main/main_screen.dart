@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../controllers/MenuAppController.dart';
 import '../../controllers/responsive.dart';
-import '../Home/dashboard_screen.dart';
+import '../Home/homeScreen.dart';
 import 'components/side_menu.dart';
 
 class MainScreen extends StatefulWidget {
@@ -35,7 +35,7 @@ class _MainScreenState extends State<MainScreen> {
               flex: 5,
               child: Consumer<MenuAppController>(
                 builder: (context, myProvider, child) {
-                  return const DashboardScreen0();
+                  return context.watch<MenuAppController>().mainScreenWidgets[context.watch<MenuAppController>().pageIndex];
                 },
               ),
             ),

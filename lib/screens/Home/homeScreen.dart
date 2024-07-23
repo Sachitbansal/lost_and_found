@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../constants.dart';
+import '../../controllers/MenuAppController.dart';
 import '../../controllers/responsive.dart';
 import 'components/header.dart';
 import 'components/recentFoundItems.dart';
 import 'components/recentLostItems.dart';
 import 'components/category.dart';
-import 'components/topBlocks.dart';
 
-class DashboardScreen0 extends StatelessWidget {
-  const DashboardScreen0({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class DashboardScreen0 extends StatelessWidget {
                   flex: 5,
                   child: Column(
                     children: [
-                      const MyFiles(),
+                      context.watch<MenuAppController>().topBlocks[context.watch<MenuAppController>().pageIndex],
                       const SizedBox(height: defaultPadding),
                       if (Responsive.isDesktop(context))
                         const Row(

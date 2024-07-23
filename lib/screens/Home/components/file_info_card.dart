@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../constants.dart';
 import '../../../models/MyFiles.dart';
 
-class FileInfoCard extends StatelessWidget {
-  const FileInfoCard({
+class TopBlocksCard extends StatelessWidget {
+  const TopBlocksCard({
     Key? key,
     required this.info,
   }) : super(key: key);
@@ -40,7 +39,7 @@ class FileInfoCard extends StatelessWidget {
           // ),
           IconButton(
             style: ButtonStyle(
-              backgroundColor:  WidgetStateProperty.all(info.color)
+              backgroundColor: WidgetStateProperty.all(info.color)
             ),
             // color: info.color,
             onPressed: null,
@@ -49,7 +48,7 @@ class FileInfoCard extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          SizedBox(height: 10,),
+          const SizedBox(height: 10,),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
