@@ -63,44 +63,52 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                 a['collection'] = document.reference;
               }).toList();
 
-              if (isLoading) {
-                return const Center(
-                  child: Text('Loading'),
-                );
-              } else {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height * .46,
                   child: Column(
                     children: [
                       Expanded(
-                        child: ListView(
-                          physics: const BouncingScrollPhysics(),
-                          children: [
-                            for (var i = 0;
-                            i < storeDocs.length;
-                            i++) ...[
-                              ItemsBlock(
-                                asset: const [
-                                  "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
-                                ],
-                                name: storeDocs[i]['title'],
-                                location: storeDocs[i]['name'],
-                                bedCount: '5',
-                                share: null,
-                                bathCount: '4',
-                                onTap: null,
-                                bookmarkFunction: null,
-                                bookmarkIcon: false,
-                                isSelected: (bool value) {},
-                              ),
-                            ],
-                          ],
+                        child: ListView.builder(
+                            itemCount: storeDocs.length,
+                            itemBuilder:  (BuildContext context, int i){
+                              final String data = storeDocs[i]['title']+storeDocs[i]['name']+storeDocs[i]['category']+storeDocs[i]['description'];
+                              final String search = context.watch<MenuAppController>().search;
+
+                              if (data.contains(search) && search != '') {
+                                return ItemsBlock(
+                                  asset: const [
+                                    "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
+                                  ],
+                                  name: storeDocs[i]['title'],
+                                  location: storeDocs[i]['name'],
+                                  share: null,
+                                  onTap: null,
+                                  bookmarkFunction: null,
+                                  bookmarkIcon: false,
+                                  isSelected: (bool value) {},
+                                );
+                              } else if (search == '') {
+                                return ItemsBlock(
+                                  asset: const [
+                                    "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
+                                  ],
+                                  name: storeDocs[i]['title'],
+                                  location: storeDocs[i]['name'],
+                                  share: null,
+                                  onTap: null,
+                                  bookmarkFunction: null,
+                                  bookmarkIcon: false,
+                                  isSelected: (bool value) {},
+                                );
+                              } else {
+                                return Container();
+                              }
+                            }
                         ),
                       ),
                     ],
                   ),
                 );
-              }
             },
           ),
           // SizedBox(
@@ -137,9 +145,7 @@ class ItemsBlock extends StatefulWidget {
     required this.asset,
     required this.name,
     required this.location,
-    required this.bedCount,
     required this.share,
-    required this.bathCount,
     required this.onTap,
     required this.bookmarkFunction,
     required this.bookmarkIcon,
@@ -148,7 +154,7 @@ class ItemsBlock extends StatefulWidget {
   });
 
   final List asset;
-  final String location, bedCount, name, bathCount;
+  final String location, name;
   final String? usage;
   final bool bookmarkIcon;
   final void Function()? share, onTap, bookmarkFunction;

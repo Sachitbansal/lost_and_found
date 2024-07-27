@@ -89,27 +89,9 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                               description: storeDocs[i]['description'],
                               category: storeDocs[i]['category'],
                             );
+                          } else {
+                            return Container();
                           }
-
-                          // if (data.contains(search) && search != ''){
-                          //   print("Found $search");
-                          //   return LostItemsList(
-                          //     task: 'lost',
-                          //     title: storeDocs[i]['title'],
-                          //     name: storeDocs[i]['name'],
-                          //     description: storeDocs[i]['description'],
-                          //     category: storeDocs[i]['category'],
-                          //   );
-                          // } else if (search == ''){
-                          //    return LostItemsList(
-                          //     task: 'lost',
-                          //     title: storeDocs[i]['title'],
-                          //     name: storeDocs[i]['name'],
-                          //     description: storeDocs[i]['description'],
-                          //     category: storeDocs[i]['category'],
-                          //   );
-                          // }
-                          return Container();
 
                         },
                       ),
