@@ -1,16 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:lost_and_found/screens/Home/components/recentLostItems.dart';
 import 'package:provider/provider.dart';
 import '../../constants.dart';
 import '../../controllers/MenuAppController.dart';
 import '../../controllers/responsive.dart';
 import '../Home/components/category.dart';
 import '../Home/components/header.dart';
-import 'addLostDataCard.dart';
+import '../Home/components/recentFoundItems.dart';
+import '../Home/components/recentLostItems.dart';
 
-class AddLostScreen extends StatelessWidget {
-  const AddLostScreen({super.key});
+class PastScreen extends StatefulWidget {
+  const PastScreen({super.key});
 
+  @override
+  State<PastScreen> createState() => _PastScreenState();
+}
+
+class _PastScreenState extends State<PastScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -28,15 +34,29 @@ class AddLostScreen extends StatelessWidget {
                   flex: 5,
                   child: Column(
                     children: [
-                      context.watch<MenuAppController>().topBlocks[
-                          context.watch<MenuAppController>().pageIndex],
+                      context.watch<MenuAppController>().topBlocks[context.watch<MenuAppController>().pageIndex],
                       const SizedBox(height: defaultPadding),
-                      const AddLostData(),
-                      const SizedBox(height: defaultPadding,),
-                      const RecentLostItems(),
+                      if (Responsive.isDesktop(context))
+                        const Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(child: RecentLostItems()),
+                            SizedBox(width: defaultPadding),
+                            Expanded(child: RecentFoundItems()),
+                          ],
+                        ),
+                      if(!Responsive.isDesktop(context))
+                        const Column(
+                          children: [
+                            RecentLostItems(),
+                            SizedBox(height: defaultPadding),
+                            RecentFoundItems(),
+                          ],
+                        ),
                       if (Responsive.isMobile(context))
                         const SizedBox(height: defaultPadding),
-                      if (Responsive.isMobile(context)) const StorageDetails(),
+                      if (Responsive.isMobile(context))
+                        const StorageDetails(),
                     ],
                   ),
                 ),

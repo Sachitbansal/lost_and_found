@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lost_and_found/screens/Home/components/topBlocks.dart';
 import 'package:lost_and_found/screens/Lost/lostScreen.dart';
+import '../screens/Found/foundScreen.dart';
 import '../screens/Home/homeScreen.dart';
 import '../screens/Lost/topBlocksLost.dart';
+import '../screens/Past/pastScreen.dart';
 
 class MenuAppController extends ChangeNotifier {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -35,7 +35,8 @@ class MenuAppController extends ChangeNotifier {
   final List<Widget> _mainScreenWidgets = [
     const HomeScreen(),
     const AddLostScreen(),
-    const AddLostScreen(),
+    const AddFoundScreen(),
+    const PastScreen(),
   ];
 
   final List<String> _categoryList = [
@@ -59,6 +60,7 @@ class MenuAppController extends ChangeNotifier {
 
   List<Widget> get mainScreenWidgets => _mainScreenWidgets;
 
+
   void changePage(int i) {
     _pageIndex = i;
     notifyListeners();
@@ -68,4 +70,5 @@ class MenuAppController extends ChangeNotifier {
     _selectedCategory = category;
     notifyListeners();
   }
+
 }

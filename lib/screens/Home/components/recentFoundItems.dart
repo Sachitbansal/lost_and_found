@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:provider/provider.dart';
 import '../../../constants.dart';
-import '../../../widgets.dart';
+import '../../../controllers/MenuAppController.dart';
 
 class RecentFoundItems extends StatefulWidget {
   const RecentFoundItems({
@@ -17,12 +17,15 @@ class RecentFoundItems extends StatefulWidget {
 class _RecentFoundItemsState extends State<RecentFoundItems> {
   bool isLoading = false;
 
-  final Stream<QuerySnapshot> foundData =
-  FirebaseFirestore.instance.collection("Found").snapshots();
-
-
   @override
   Widget build(BuildContext context) {
+
+    final int pageIndex = context.watch<MenuAppController>().pageIndex;
+
+    final Stream<QuerySnapshot> foundData =
+    FirebaseFirestore.instance.collection(pageIndex == 3 ? 'PastFound' : 'Found').snapshots();
+
+
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(
@@ -33,7 +36,7 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Recent Lost Items",
+            "Recent Found Items",
             style: Theme.of(context).textTheme.titleMedium,
           ),
           StreamBuilder<QuerySnapshot>(
@@ -221,77 +224,12 @@ class _ItemsBlockState extends State<ItemsBlock> {
                           const SizedBox(
                             height: 5,
                           ),
-                          Row(
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.king_bed,
-                                    color: Colors.blue[700],
-                                    size: 18,
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    widget.bedCount,
-                                    style: GoogleFonts.play(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.lightBlueAccent,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.bathtub,
-                                    color: Colors.blue[700],
-                                    size: 16,
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    widget.bathCount,
-                                    style: GoogleFonts.play(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.lightBlueAccent,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  if (widget.usage != 'public')
-                    IconButton(
-                      icon: Icon(
-                        widget.bookmarkIcon
-                            ? Icons.bookmark
-                            : Icons.bookmark_border,
-                        color: Colors.lightBlueAccent,
-                      ),
-                      onPressed: widget.bookmarkFunction,
-                    ),
-                  IconButton(
-                    icon: const Icon(Icons.share),
-                    onPressed: widget.share,
-                  ),
-                ],
-              )
             ],
           ),
         ),

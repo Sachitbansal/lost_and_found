@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import '../../../constants.dart';
+import '../../../controllers/MenuAppController.dart';
 import '../../../models/recentLostItemData.dart';
 
 class RecentLostItems extends StatefulWidget {
   const RecentLostItems({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<RecentLostItems> createState() => _RecentLostItemsState();
@@ -16,11 +18,14 @@ class RecentLostItems extends StatefulWidget {
 class _RecentLostItemsState extends State<RecentLostItems> {
   bool isLoading = false;
 
-  final Stream<QuerySnapshot> lostItemData =
-  FirebaseFirestore.instance.collection("Dadi").snapshots();
-
   @override
   Widget build(BuildContext context) {
+
+    final int pageIndex = context.watch<MenuAppController>().pageIndex;
+
+    final Stream<QuerySnapshot> lostItemData =
+    FirebaseFirestore.instance.collection(pageIndex == 3 ? 'PastLost' : 'Dadi').snapshots();
+
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(
@@ -31,7 +36,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Recent Lost Items",
+            pageIndex == 3 ? 'Past Lost Items' : 'Recent Lost Items',
             style: Theme.of(context).textTheme.titleMedium,
           ),
           StreamBuilder<QuerySnapshot>(
