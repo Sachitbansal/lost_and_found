@@ -25,7 +25,6 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
     final Stream<QuerySnapshot> foundData =
     FirebaseFirestore.instance.collection(pageIndex == 3 ? 'PastFound' : 'Found').snapshots();
 
-
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(

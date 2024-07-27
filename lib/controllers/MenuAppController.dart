@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lost_and_found/screens/Home/components/topBlocks.dart';
 import 'package:lost_and_found/screens/Lost/lostScreen.dart';
@@ -18,6 +19,7 @@ class MenuAppController extends ChangeNotifier {
   }
 
   int _pageIndex = 0;
+  String _search = '';
 
   final List<String> _headerTitle = [
     "Home",
@@ -57,6 +59,7 @@ class MenuAppController extends ChangeNotifier {
   List<String> get categoryList => _categoryList;
 
   String get selectedCategory => _selectedCategory;
+  String get search => _search;
 
   List<Widget> get mainScreenWidgets => _mainScreenWidgets;
 
@@ -68,6 +71,12 @@ class MenuAppController extends ChangeNotifier {
 
   void changeCategory(String category) {
     _selectedCategory = category;
+    notifyListeners();
+  }
+
+  void changeSearch (String search) {
+    _search = search;
+
     notifyListeners();
   }
 

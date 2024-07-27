@@ -20,11 +20,11 @@ class _RecentLostItemsState extends State<RecentLostItems> {
 
   @override
   Widget build(BuildContext context) {
-
     final int pageIndex = context.watch<MenuAppController>().pageIndex;
 
-    final Stream<QuerySnapshot> lostItemData =
-    FirebaseFirestore.instance.collection(pageIndex == 3 ? 'PastLost' : 'Dadi').snapshots();
+    final Stream<QuerySnapshot> lostItemData = FirebaseFirestore.instance
+        .collection(pageIndex == 3 ? 'PastLost' : 'Dadi')
+        .snapshots();
 
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
@@ -41,8 +41,8 @@ class _RecentLostItemsState extends State<RecentLostItems> {
           ),
           StreamBuilder<QuerySnapshot>(
             stream: lostItemData,
-            builder: (BuildContext context,
-                AsyncSnapshot<QuerySnapshot> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -50,8 +50,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                   ),
                 );
               }
-              if (snapshot.connectionState ==
-                  ConnectionState.waiting) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
@@ -64,38 +63,60 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                 a['collection'] = document.reference;
               }).toList();
 
-              if (isLoading) {
-                return const Center(
-                  child: Text('Loading'),
-                );
-              } else {
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * .46,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView(
-                          physics: const BouncingScrollPhysics(),
-                          children: [
-                            for (var i = 0;
-                            i < storeDocs.length;
-                            i++) ...[
-                              LostItemsList(
-                                task: 'lost',
-                                title: storeDocs[i]['title'],
-                                name: storeDocs[i]['name'],
-                                description: storeDocs[i]
-                                ['description'],
-                                category: storeDocs[i]['category'],
-                              ),
-                            ],
-                          ],
-                        ),
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * .46,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: storeDocs.length,
+                        itemBuilder:  (BuildContext context, int i){
+                          final String data = storeDocs[i]['title']+storeDocs[i]['name']+storeDocs[i]['category']+storeDocs[i]['description'];
+                          final String search = context.watch<MenuAppController>().search;
+                          if (data.contains(search) && search != ''){
+                            return LostItemsList(
+                                  task: 'lost',
+                                  title: storeDocs[i]['title'],
+                                  name: storeDocs[i]['name'],
+                                  description: storeDocs[i]['description'],
+                                  category: storeDocs[i]['category'],
+                                );
+                          } else if (search == ''){
+                            return LostItemsList(
+                              task: 'lost',
+                              title: storeDocs[i]['title'],
+                              name: storeDocs[i]['name'],
+                              description: storeDocs[i]['description'],
+                              category: storeDocs[i]['category'],
+                            );
+                          }
+
+                          // if (data.contains(search) && search != ''){
+                          //   print("Found $search");
+                          //   return LostItemsList(
+                          //     task: 'lost',
+                          //     title: storeDocs[i]['title'],
+                          //     name: storeDocs[i]['name'],
+                          //     description: storeDocs[i]['description'],
+                          //     category: storeDocs[i]['category'],
+                          //   );
+                          // } else if (search == ''){
+                          //    return LostItemsList(
+                          //     task: 'lost',
+                          //     title: storeDocs[i]['title'],
+                          //     name: storeDocs[i]['name'],
+                          //     description: storeDocs[i]['description'],
+                          //     category: storeDocs[i]['category'],
+                          //   );
+                          // }
+                          return Container();
+
+                        },
                       ),
-                    ],
-                  ),
-                );
-              }
+                    ),
+                  ],
+                ),
+              );
             },
           ),
         ],
@@ -116,7 +137,7 @@ DataRow recentFileDataRow(RecentFile fileInfo) {
               height: 25,
               width: 25,
             ),
-            SizedBox(
+            const SizedBox(
               width: 5,
             ),
             Padding(
@@ -144,15 +165,16 @@ DataRow recentFileDataRow(RecentFile fileInfo) {
     ],
   );
 }
-class LostItemsList extends StatelessWidget {
 
+class LostItemsList extends StatelessWidget {
   final String title;
   final String description;
   final String category;
   final String name;
   final String task;
 
-  const LostItemsList({super.key,
+  const LostItemsList({
+    super.key,
     required this.title,
     required this.name,
     required this.task,
@@ -163,7 +185,7 @@ class LostItemsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:  const EdgeInsets.all(defaultPadding/2),
+      padding: const EdgeInsets.all(defaultPadding / 2),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: ExpansionTile(
@@ -181,8 +203,8 @@ class LostItemsList extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(category, style: TextStyle( color: Colors.white70)),
-                  Text(description, style: TextStyle( color: Colors.white70)),
+                  Text(category, style: TextStyle(color: Colors.white70)),
+                  Text(description, style: TextStyle(color: Colors.white70)),
                 ],
               ),
             ),
@@ -192,4 +214,3 @@ class LostItemsList extends StatelessWidget {
     );
   }
 }
-

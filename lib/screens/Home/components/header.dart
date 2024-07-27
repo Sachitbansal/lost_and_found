@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -80,14 +81,38 @@ class ProfileCard extends StatelessWidget {
   }
 }
 
-class SearchField extends StatelessWidget {
+class SearchField extends StatefulWidget {
   const SearchField({
     super.key,
   });
 
   @override
+  State<SearchField> createState() => _SearchFieldState();
+}
+
+class _SearchFieldState extends State<SearchField> {
+
+  final searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    final int pageIndex = context.watch<MenuAppController>().pageIndex;
+
+    final Stream<QuerySnapshot> lostItemData =
+    FirebaseFirestore.instance.collection(pageIndex == 3 ? 'PastLost' : 'Dadi').snapshots();
+
     return TextField(
+      controller: searchController,
+      onChanged: (string){
+        context.read<MenuAppController>().changeSearch(string);
+      },
       decoration: InputDecoration(
         hintText: "Search",
         fillColor: secondaryColor,
