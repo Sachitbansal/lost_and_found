@@ -232,6 +232,14 @@ class _ItemsBlockState extends State<ItemsBlock> {
                         ],
                       ),
                     ),
+                    Column(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.delete_outline),
+                          onPressed: null,
+                        )
+                      ],
+                    )
                   ],
                 ),
               ),
