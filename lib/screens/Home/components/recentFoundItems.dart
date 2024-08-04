@@ -232,7 +232,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
                         ],
                       ),
                     ),
-                    Column(
+                    const Column(
                       children: [
                         IconButton(
                           icon: Icon(Icons.delete_outline),
