@@ -119,8 +119,9 @@ class EmailError extends StatelessWidget {
               margin: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Padding(
                 padding: const EdgeInsets.all(defaultPadding),
-                child: TextButton(
-                  onPressed: () {
+                child: GestureDetector(
+                  onTap: () {
+                    FirebaseAuth.instance.currentUser?.delete();
                     FirebaseAuth.instance.signOut();
                   },
                   child: const Text(
