@@ -77,19 +77,62 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //
+    // bool checkEmail(String email) {
+    //   if (email.substring(""))
+    // }
+
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData &&
             FirebaseAuth.instance.currentUser!.emailVerified) {
-          return const MainScreen();
+          String? email = FirebaseAuth.instance.currentUser!.email;
+          if (email?.substring(7, email.length) == "students.iitmandi.ac.in") {
+            return const MainScreen();
+          } else {
+            return const EmailError();
+          }
         } else {
           return const SignUpScreen();
         }
       },
     );
   }
-
 }
 
+class EmailError extends StatelessWidget {
+  const EmailError({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          color: bgColor,
+          child: Center(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10), // radius of 10
+                color: secondaryColor,
+              ),
+              margin: const EdgeInsets.only(left: 20.0, right: 20.0),
+              child: Padding(
+                padding: const EdgeInsets.all(defaultPadding),
+                child: TextButton(
+                  onPressed: () {
+                    FirebaseAuth.instance.signOut();
+                  },
+                  child: const Text(
+                    "Please Login with Student ID \nTap To Logout",
+                    style: TextStyle(fontSize: 25),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

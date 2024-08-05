@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../constants.dart';
-import '../screens/main/main_screen.dart';
+import '../../constants.dart';
 
 class SignUpForm extends StatelessWidget {
   SignUpForm({
@@ -43,19 +42,7 @@ class SignUpForm extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => MainScreen()),
-              // );
               signInWithGoogle();
-              // Navigator.pushReplacement(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) {
-              //       return const MainScreen();
-              //     }
-              //   )
-              // );
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -67,7 +54,7 @@ class SignUpForm extends StatelessWidget {
                     height: 35,
                   ),
                   const Text(
-                    "Login With Google",
+                    "Login With Student ID",
                     style: TextStyle(color: kPrimaryColor, fontSize: 20),
                   ),
                   Opacity(

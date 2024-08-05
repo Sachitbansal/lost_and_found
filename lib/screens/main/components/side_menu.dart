@@ -51,15 +51,6 @@ class SideMenu extends StatelessWidget {
             press: () {
 
               FirebaseAuth.instance.signOut();
-              // Navigator.pop(context);
-              // Navigator.pushReplacement(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) {
-              //           return SignUpScreen();
-              //         }
-              //     )
-              // );
 
             },
           ),
