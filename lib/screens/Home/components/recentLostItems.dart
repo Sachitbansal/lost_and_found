@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ class RecentLostItems extends StatefulWidget {
 
 class _RecentLostItemsState extends State<RecentLostItems> {
   bool isLoading = false;
+  final String? email = FirebaseAuth.instance.currentUser?.email;
 
   @override
   Widget build(BuildContext context) {
@@ -70,29 +72,28 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                     Expanded(
                       child: ListView.builder(
                         itemCount: storeDocs.length,
-                        itemBuilder:  (BuildContext context, int i){
-                          final String data = storeDocs[i]['title']+storeDocs[i]['name']+storeDocs[i]['category']+storeDocs[i]['description'];
-                          final String search = context.watch<MenuAppController>().search;
-                          if (data.contains(search) && search != ''){
+                        itemBuilder: (BuildContext context, int i) {
+                          final String data = storeDocs[i]['title'] +
+                              storeDocs[i]['name'] +
+                              storeDocs[i]['category'] +
+                              storeDocs[i]['description'];
+                          final String search =
+                              context.watch<MenuAppController>().search;
+                          if (data.contains(search) && search != '') {
                             return LostItemsList(
-                                  task: 'lost',
-                                  title: storeDocs[i]['title'],
-                                  name: storeDocs[i]['name'],
-                                  description: storeDocs[i]['description'],
-                                  category: storeDocs[i]['category'],
-                                );
-                          } else if (search == ''){
+                              docId: storeDocs[i],
+                              deleteIcon: email == storeDocs[i]['email'] &&
+                                  pageIndex != 3,
+                            );
+                          } else if (search == '') {
                             return LostItemsList(
-                              task: 'lost',
-                              title: storeDocs[i]['title'],
-                              name: storeDocs[i]['name'],
-                              description: storeDocs[i]['description'],
-                              category: storeDocs[i]['category'],
+                              docId: storeDocs[i],
+                              deleteIcon: email == storeDocs[i]['email'] &&
+                                  pageIndex != 3,
                             );
                           } else {
                             return Container();
                           }
-
                         },
                       ),
                     ),
@@ -107,86 +108,80 @@ class _RecentLostItemsState extends State<RecentLostItems> {
   }
 }
 
-DataRow recentFileDataRow(RecentFile fileInfo) {
-  return DataRow(
-    cells: [
-      DataCell(
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SvgPicture.asset(
-              fileInfo.icon!,
-              height: 25,
-              width: 25,
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              child: Text(
-                fileInfo.title!,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-      DataCell(
-        Text(
-          fileInfo.date!,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-      DataCell(
-        Text(
-          fileInfo.size!,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    ],
-  );
-}
-
-class LostItemsList extends StatelessWidget {
-  final String title;
-  final String description;
-  final String category;
-  final String name;
-  final String task;
+class LostItemsList extends StatefulWidget {
+  final bool deleteIcon;
+  final dynamic docId;
 
   const LostItemsList({
     super.key,
-    required this.title,
-    required this.name,
-    required this.task,
-    required this.description,
-    required this.category,
+    required this.docId,
+    required this.deleteIcon,
   });
 
   @override
+  State<LostItemsList> createState() => _LostItemsListState();
+}
+
+class _LostItemsListState extends State<LostItemsList> {
+  @override
   Widget build(BuildContext context) {
+    final CollectionReference ref =
+        FirebaseFirestore.instance.collection('Dadi');
+
+    Future<void> deleteMethod(CollectionReference ref, dynamic docId) async {
+
+      try {
+        await ref.doc(docId['id']).delete().then(
+              (doc) => print("Document deleted"),
+          onError: (e) => print("Error updating document $e"),
+        );
+      } catch (e) {
+        print("Dikkat $e");
+        print(docId);
+      }
+
+
+    }
+
     return Padding(
       padding: const EdgeInsets.all(defaultPadding / 2),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: ExpansionTile(
-          // backgroundColor: Colors.black54,
+          trailing: widget.deleteIcon
+              ? GestureDetector(
+                  onTap: () => deleteMethod(ref, widget.docId),
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.white60,
+                  ))
+              : null,
           collapsedBackgroundColor: Colors.black26,
-          title: Text(title, maxLines: 2),
+          title: Text(widget.docId['title'], maxLines: 2),
           subtitle: Text(
-            name,
+            widget.docId['name'],
             style: const TextStyle(fontSize: 13, color: Colors.white70),
           ),
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          expandedAlignment: Alignment.centerLeft,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(defaultPadding),
+              padding: const EdgeInsets.all(defaultPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(category, style: TextStyle(color: Colors.white70)),
-                  Text(description, style: TextStyle(color: Colors.white70)),
+                  Text(
+                    widget.docId['category'],
+                    style: const TextStyle(
+                      color: Colors.white70,
+                    ),
+                  ),
+                  Text(
+                    widget.docId['description'],
+                    style: const TextStyle(
+                      color: Colors.white70,
+                    ),
+                  ),
                 ],
               ),
             ),

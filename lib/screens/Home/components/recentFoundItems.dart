@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -19,11 +20,12 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
 
   @override
   Widget build(BuildContext context) {
-
     final int pageIndex = context.watch<MenuAppController>().pageIndex;
 
-    final Stream<QuerySnapshot> foundData =
-    FirebaseFirestore.instance.collection(pageIndex == 3 ? 'PastFound' : 'Found').snapshots();
+    final Stream<QuerySnapshot> foundData = FirebaseFirestore.instance
+        .collection(pageIndex == 3 ? 'PastFound' : 'Found')
+        .snapshots();
+    final String? email = FirebaseAuth.instance.currentUser?.email;
 
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
@@ -40,8 +42,8 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
           ),
           StreamBuilder<QuerySnapshot>(
             stream: foundData,
-            builder: (BuildContext context,
-                AsyncSnapshot<QuerySnapshot> snapshot) {
+            builder:
+                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -49,8 +51,7 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                   ),
                 );
               }
-              if (snapshot.connectionState ==
-                  ConnectionState.waiting) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(
                   child: CircularProgressIndicator(),
                 );
@@ -63,52 +64,55 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                 a['collection'] = document.reference;
               }).toList();
 
-                return SizedBox(
-                  height: MediaQuery.of(context).size.height * .46,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                            itemCount: storeDocs.length,
-                            itemBuilder:  (BuildContext context, int i){
-                              final String data = storeDocs[i]['title']+storeDocs[i]['name']+storeDocs[i]['category']+storeDocs[i]['description'];
-                              final String search = context.watch<MenuAppController>().search;
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * .46,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: storeDocs.length,
+                          itemBuilder: (BuildContext context, int i) {
+                            final String data = storeDocs[i]['title'] +
+                                storeDocs[i]['name'] +
+                                storeDocs[i]['category'] +
+                                storeDocs[i]['description'];
+                            final String search =
+                                context.watch<MenuAppController>().search;
 
-                              if (data.contains(search) && search != '') {
-                                return ItemsBlock(
-                                  asset: const [
-                                    "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
-                                  ],
-                                  name: storeDocs[i]['title'],
-                                  location: storeDocs[i]['name'],
-                                  share: null,
-                                  onTap: null,
-                                  bookmarkFunction: null,
-                                  bookmarkIcon: false,
-                                  isSelected: (bool value) {},
-                                );
-                              } else if (search == '') {
-                                return ItemsBlock(
-                                  asset: const [
-                                    "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
-                                  ],
-                                  name: storeDocs[i]['title'],
-                                  location: storeDocs[i]['name'],
-                                  share: null,
-                                  onTap: null,
-                                  bookmarkFunction: null,
-                                  bookmarkIcon: false,
-                                  isSelected: (bool value) {},
-                                );
-                              } else {
-                                return Container();
-                              }
+                            if (data.contains(search) && search != '') {
+                              return ItemsBlock(
+                                asset: const [
+                                  "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
+                                ],
+                                share: null,
+                                onTap: null,
+                                docId: storeDocs[i],
+                                bookmarkFunction: null,
+                                bookmarkIcon: false,
+                                isSelected: (bool value) {},
+                                deleteIcon: email == storeDocs[i]['email'],
+                              );
+                            } else if (search == '') {
+                              return ItemsBlock(
+                                asset: const [
+                                  "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
+                                ],
+                                docId: storeDocs[i],
+                                share: null,
+                                onTap: null,
+                                bookmarkFunction: null,
+                                bookmarkIcon: false,
+                                isSelected: (bool value) {},
+                                deleteIcon: email == storeDocs[i]['email'],
+                              );
+                            } else {
+                              return Container();
                             }
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                          }),
+                    ),
+                  ],
+                ),
+              );
             },
           ),
           // SizedBox(
@@ -143,20 +147,20 @@ class ItemsBlock extends StatefulWidget {
   const ItemsBlock({
     super.key,
     required this.asset,
-    required this.name,
-    required this.location,
     required this.share,
     required this.onTap,
     required this.bookmarkFunction,
     required this.bookmarkIcon,
+    required this.deleteIcon,
     required this.isSelected,
+    required this.docId,
     this.usage,
   });
 
   final List asset;
-  final String location, name;
+  final dynamic docId;
   final String? usage;
-  final bool bookmarkIcon;
+  final bool bookmarkIcon, deleteIcon;
   final void Function()? share, onTap, bookmarkFunction;
   final ValueChanged<bool> isSelected;
 
@@ -203,7 +207,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.name,
+                            widget.docId['title'],
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
                             maxLines: 2,
@@ -217,7 +221,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
                             height: 5,
                           ),
                           Text(
-                            widget.location,
+                            widget.docId['name'],
                             softWrap: false,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -232,14 +236,18 @@ class _ItemsBlockState extends State<ItemsBlock> {
                         ],
                       ),
                     ),
-                    const Column(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.delete_outline),
-                          onPressed: null,
-                        )
-                      ],
-                    )
+                    if (widget.deleteIcon)
+                      const Column(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: Colors.white60,
+                            ),
+                            onPressed: null,
+                          )
+                        ],
+                      )
                   ],
                 ),
               ),

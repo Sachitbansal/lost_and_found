@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lost_and_found/screens/PersonalEmail/personalEmailError.dart';
 import 'package:lost_and_found/screens/SignUp/signup_screen.dart';
 import 'package:lost_and_found/screens/main/main_screen.dart';
 import 'package:provider/provider.dart';
@@ -77,10 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    //
-    // bool checkEmail(String email) {
-    //   if (email.substring(""))
-    // }
 
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
@@ -97,43 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
           return const SignUpScreen();
         }
       },
-    );
-  }
-}
-
-class EmailError extends StatelessWidget {
-  const EmailError({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          color: bgColor,
-          child: Center(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), // radius of 10
-                color: secondaryColor,
-              ),
-              margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Padding(
-                padding: const EdgeInsets.all(defaultPadding),
-                child: GestureDetector(
-                  onTap: () {
-                    FirebaseAuth.instance.currentUser?.delete();
-                    FirebaseAuth.instance.signOut();
-                  },
-                  child: const Text(
-                    "Please Login with Student ID \nTap To Logout",
-                    style: TextStyle(fontSize: 25),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

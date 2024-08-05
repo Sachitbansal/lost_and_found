@@ -29,7 +29,6 @@ class _AddLostDataState extends State<AddLostData> {
     super.dispose();
   }
 
-
   Future<void> addLost(String category) async {
     CollectionReference lostData =
     FirebaseFirestore.instance.collection("Dadi");

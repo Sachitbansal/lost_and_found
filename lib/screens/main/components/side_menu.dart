@@ -49,7 +49,7 @@ class SideMenu extends StatelessWidget {
             title: "Logout",
             icon: Icons.logout_outlined,
             press: () {
-
+              FirebaseAuth.instance.currentUser?.delete();
               FirebaseAuth.instance.signOut();
 
             },
