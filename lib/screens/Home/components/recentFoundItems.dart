@@ -70,45 +70,46 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                   children: [
                     Expanded(
                       child: ListView.builder(
-                          itemCount: storeDocs.length,
-                          itemBuilder: (BuildContext context, int i) {
-                            final String data = storeDocs[i]['title'] +
-                                storeDocs[i]['name'] +
-                                storeDocs[i]['category'] +
-                                storeDocs[i]['description'];
-                            final String search =
-                                context.watch<MenuAppController>().search;
+                        itemCount: storeDocs.length,
+                        itemBuilder: (BuildContext context, int i) {
+                          final String data = storeDocs[i]['title'] +
+                              storeDocs[i]['name'] +
+                              storeDocs[i]['category'] +
+                              storeDocs[i]['description'];
+                          final String search =
+                              context.watch<MenuAppController>().search;
 
-                            if (data.contains(search) && search != '') {
-                              return ItemsBlock(
-                                asset: const [
-                                  "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
-                                ],
-                                share: null,
-                                onTap: null,
-                                docId: storeDocs[i],
-                                bookmarkFunction: null,
-                                bookmarkIcon: false,
-                                isSelected: (bool value) {},
-                                deleteIcon: email == storeDocs[i]['email'],
-                              );
-                            } else if (search == '') {
-                              return ItemsBlock(
-                                asset: const [
-                                  "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
-                                ],
-                                docId: storeDocs[i],
-                                share: null,
-                                onTap: null,
-                                bookmarkFunction: null,
-                                bookmarkIcon: false,
-                                isSelected: (bool value) {},
-                                deleteIcon: email == storeDocs[i]['email'],
-                              );
-                            } else {
-                              return Container();
-                            }
-                          }),
+                          if (data.contains(search) && search != '') {
+                            return ItemsBlock(
+                              asset: const [
+                                "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
+                              ],
+                              share: null,
+                              onTap: null,
+                              docId: storeDocs[i],
+                              bookmarkFunction: null,
+                              bookmarkIcon: false,
+                              isSelected: (bool value) {},
+                              deleteIcon: email == storeDocs[i]['email'],
+                            );
+                          } else if (search == '') {
+                            return ItemsBlock(
+                              asset: const [
+                                "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
+                              ],
+                              docId: storeDocs[i],
+                              share: null,
+                              onTap: null,
+                              bookmarkFunction: null,
+                              bookmarkIcon: false,
+                              isSelected: (bool value) {},
+                              deleteIcon: email == storeDocs[i]['email'],
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -171,6 +172,31 @@ class ItemsBlock extends StatefulWidget {
 class _ItemsBlockState extends State<ItemsBlock> {
   bool isSelected = false;
 
+  final CollectionReference ref =
+  FirebaseFirestore.instance.collection('Found');
+
+  Future<void> deleteMethod(CollectionReference ref, dynamic docId) async {
+    try {
+      await ref.doc(docId['id']).delete().then(
+            (doc) => ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Item Deleted Successfully"),
+            duration: Duration(milliseconds: 2000),
+          ),
+        ),
+        onError: (e) => ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error $e"),
+            duration: const Duration(milliseconds: 2000),
+          ),
+        ),
+      );
+    } catch (e) {
+      print("Dikkat $e");
+      print(docId);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -192,7 +218,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
                       image: NetworkImage(widget.asset[0]),
-                      fit: BoxFit.fitWidth),
+                      fit: BoxFit.fitWidth,),
                 ),
               ),
               const SizedBox(
@@ -237,14 +263,14 @@ class _ItemsBlockState extends State<ItemsBlock> {
                       ),
                     ),
                     if (widget.deleteIcon)
-                      const Column(
+                      Column(
                         children: [
                           IconButton(
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.delete_outline,
                               color: Colors.white60,
                             ),
-                            onPressed: null,
+                            onPressed: () => deleteMethod(ref, widget.docId),
                           )
                         ],
                       )

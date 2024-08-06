@@ -82,12 +82,16 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                           if (data.contains(search) && search != '') {
                             return LostItemsList(
                               docId: storeDocs[i],
+                              collectionName:
+                                  pageIndex == 3 ? 'PastLost' : 'Dadi',
                               deleteIcon: email == storeDocs[i]['email'] &&
                                   pageIndex != 3,
                             );
                           } else if (search == '') {
                             return LostItemsList(
                               docId: storeDocs[i],
+                              collectionName:
+                                  pageIndex == 3 ? 'PastLost' : 'Dadi',
                               deleteIcon: email == storeDocs[i]['email'] &&
                                   pageIndex != 3,
                             );
@@ -111,12 +115,13 @@ class _RecentLostItemsState extends State<RecentLostItems> {
 class LostItemsList extends StatefulWidget {
   final bool deleteIcon;
   final dynamic docId;
+  final String collectionName;
 
-  const LostItemsList({
-    super.key,
-    required this.docId,
-    required this.deleteIcon,
-  });
+  const LostItemsList(
+      {super.key,
+      required this.docId,
+      required this.deleteIcon,
+      required this.collectionName});
 
   @override
   State<LostItemsList> createState() => _LostItemsListState();
@@ -125,22 +130,30 @@ class LostItemsList extends StatefulWidget {
 class _LostItemsListState extends State<LostItemsList> {
   @override
   Widget build(BuildContext context) {
-    final CollectionReference ref =
-        FirebaseFirestore.instance.collection('Dadi');
-
-    Future<void> deleteMethod(CollectionReference ref, dynamic docId) async {
-
+    Future<void> deleteMethod(String collectionName, dynamic docId) async {
       try {
-        await ref.doc(docId['id']).delete().then(
-              (doc) => print("Document deleted"),
-          onError: (e) => print("Error updating document $e"),
-        );
+        await FirebaseFirestore.instance
+            .collection(collectionName)
+            .doc(docId['id'])
+            .delete()
+            .then(
+              (doc) => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Item Deleted Successfully"),
+                  duration: Duration(milliseconds: 2000),
+                ),
+              ),
+              onError: (e) => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Error $e"),
+                  duration: const Duration(milliseconds: 2000),
+                ),
+              ),
+            );
       } catch (e) {
         print("Dikkat $e");
         print(docId);
       }
-
-
     }
 
     return Padding(
@@ -150,11 +163,13 @@ class _LostItemsListState extends State<LostItemsList> {
         child: ExpansionTile(
           trailing: widget.deleteIcon
               ? GestureDetector(
-                  onTap: () => deleteMethod(ref, widget.docId),
+                  onTap: () =>
+                      deleteMethod(widget.collectionName, widget.docId),
                   child: const Icon(
                     Icons.delete_outline,
                     color: Colors.white60,
-                  ))
+                  ),
+                )
               : null,
           collapsedBackgroundColor: Colors.black26,
           title: Text(widget.docId['title'], maxLines: 2),

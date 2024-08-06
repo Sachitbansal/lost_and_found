@@ -103,66 +103,77 @@ class _AddFoundDataState extends State<AddFoundData> {
       'name': currentUser?.displayName,
       'email': currentUser?.email,
       'phone': currentUser?.phoneNumber
-    }).then((value) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Added Successfully'),
-        ),
-      );
-    });
+    }).then(
+      (value) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Added Successfully'),
+          ),
+        );
+      },
+    );
   }
 
   selectFile(bool imageFrom) async {
 
-    try {
 
+    // try {
+    //   bool isGranted = await Permission.mediaLibrary.status.isGranted;
+    //
+    //   if (!isGranted) {
+    //     isGranted = await Permission.mediaLibrary.request().isGranted;
+    //     print("Permission nahi hai");
+    //   } else {
+    //     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
+    //
+    //     if (fileResult != null) {
+    //       selectedFile = fileResult.files.first.name;
+    //       selectedImageByte = fileResult.files.first.bytes;
+    //       uploadFile();
+    //     }
+    //     print(selectedFile);
+    //   }
+    // } catch (error) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text("Dikkat $error"),
+    //       // duration: Duration(milliseconds: 300),
+    //     ),
+    //   );
+    // }
 
-      bool isGranted = await Permission.mediaLibrary.status.isGranted;
-
-      if (!isGranted) {
-        isGranted = await Permission.mediaLibrary.request().isGranted;
-        print("Permission nahi hai");
-      } else {
-        FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
+    FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
 
         if (fileResult != null) {
           selectedFile = fileResult.files.first.name;
           selectedImageByte = fileResult.files.first.bytes;
-          uploadFile();
+          // uploadFile();
         }
-
         print(selectedFile);
-      }
 
 
-    } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Dikkat"),
-        duration: Duration(milliseconds: 300),
-      ));
-    }
   }
 
   Future<void> uploadFile() async {
     try {
-
       final imgId = DateTime.now().millisecondsSinceEpoch.toString();
 
-      Reference reference = FirebaseStorage.instance
-          .ref()
-          .child("images")
-          .child("post_$imgId");
+      Reference reference =
+          FirebaseStorage.instance.ref().child("images").child("post_$imgId");
       final metaData = SettableMetadata(contentType: 'image/jpeg');
 
       uploadTask = reference.putData(selectedImageByte, metaData);
 
-      await uploadTask?.whenComplete(() {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Uploaded"),
-          duration: Duration(milliseconds: 300),
-        ));
-      });
-
+      await uploadTask?.whenComplete(
+        () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Uploaded"),
+              // duration: Duration(milliseconds: 300),
+            ),
+          );
+        },
+      );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('$error'),
@@ -262,9 +273,6 @@ class _AddFoundDataState extends State<AddFoundData> {
               // print(context.watch<MenuAppController>().pickedImaged);
               selectFile(true);
               // Image.memory(selectedImageByte);
-
-
-
             },
           ),
           Wrap(
