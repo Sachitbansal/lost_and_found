@@ -115,8 +115,6 @@ class _AddFoundDataState extends State<AddFoundData> {
   }
 
   selectFile(bool imageFrom) async {
-
-
     // try {
     //   bool isGranted = await Permission.mediaLibrary.status.isGranted;
     //
@@ -144,14 +142,15 @@ class _AddFoundDataState extends State<AddFoundData> {
 
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
 
-        if (fileResult != null) {
-          selectedFile = fileResult.files.first.name;
-          selectedImageByte = fileResult.files.first.bytes;
-          // uploadFile();
-        }
-        print(selectedFile);
+    final auth = FirebaseAuth.instance.currentUser?.email;
+    print(auth);
 
-
+    if (fileResult != null) {
+      selectedFile = fileResult.files.first.name;
+      selectedImageByte = fileResult.files.first.bytes;
+      // uploadFile();
+    }
+    print(selectedFile);
   }
 
   Future<void> uploadFile() async {
@@ -175,10 +174,12 @@ class _AddFoundDataState extends State<AddFoundData> {
         },
       );
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('$error'),
-        duration: Duration(milliseconds: 300),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$error'),
+          duration: Duration(milliseconds: 300),
+        ),
+      );
     }
 
     // return await reference.getDownloadURL();
