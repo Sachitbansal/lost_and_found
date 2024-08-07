@@ -288,7 +288,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
 
                               try {
                                 final Uri url =
-                                Uri.parse("mailto:$widget.docId['email']");
+                                Uri.parse("mailto:${widget.docId['email']}");
                                 if (await canLaunchUrl(url)) {
                                   await launchUrl(url);
                                 }

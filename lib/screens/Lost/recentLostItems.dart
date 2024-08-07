@@ -178,7 +178,7 @@ class _LostItemsListState extends State<LostItemsList> {
 
 
                       final Uri url =
-                      Uri.parse("mailto:$widget.docId['email']");
+                      Uri.parse("mailto:${widget.docId['email']}");
                       if (await canLaunchUrl(url)) {
                         await launchUrl(url);
                       }
