@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../constants.dart';
 import '../../controllers/MenuAppController.dart';
 
@@ -173,24 +174,24 @@ class _ItemsBlockState extends State<ItemsBlock> {
   bool isSelected = false;
 
   final CollectionReference ref =
-  FirebaseFirestore.instance.collection('Found');
+      FirebaseFirestore.instance.collection('Found');
 
   Future<void> deleteMethod(CollectionReference ref, dynamic docId) async {
     try {
       await ref.doc(docId['id']).delete().then(
             (doc) => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Item Deleted Successfully"),
-            duration: Duration(milliseconds: 2000),
-          ),
-        ),
-        onError: (e) => ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error $e"),
-            duration: const Duration(milliseconds: 2000),
-          ),
-        ),
-      );
+              const SnackBar(
+                content: Text("Item Deleted Successfully"),
+                duration: Duration(milliseconds: 2000),
+              ),
+            ),
+            onError: (e) => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Error $e"),
+                duration: const Duration(milliseconds: 2000),
+              ),
+            ),
+          );
     } catch (e) {
       print("Dikkat $e");
       print(docId);
@@ -212,13 +213,14 @@ class _ItemsBlockState extends State<ItemsBlock> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                height: 100,
-                width: 100,
+                height: 65,
+                width: 65,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   image: DecorationImage(
-                      image: NetworkImage(widget.asset[0]),
-                      fit: BoxFit.fitWidth,),
+                    image: NetworkImage(widget.asset[0]),
+                    fit: BoxFit.fitWidth,
+                  ),
                 ),
               ),
               const SizedBox(
@@ -273,7 +275,36 @@ class _ItemsBlockState extends State<ItemsBlock> {
                             onPressed: () => deleteMethod(ref, widget.docId),
                           )
                         ],
-                      )
+                      ),
+                    if (!widget.deleteIcon)
+                      Column(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.mail_outline,
+                              color: Colors.white60,
+                            ),
+                            onPressed: () async {
+
+                              try {
+                                final Uri url =
+                                Uri.parse("mailto:$widget.docId['email']");
+                                if (await canLaunchUrl(url)) {
+                                  await launchUrl(url);
+                                }
+                              } catch (e) {
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text("Error $e"),
+                                ));
+                              }
+
+                            },
+                          )
+                        ],
+                      ),
+                    const SizedBox(
+                      width: 10,
+                    )
                   ],
                 ),
               ),

@@ -163,19 +163,30 @@ class _LostItemsListState extends State<LostItemsList> {
           trailing: widget.deleteIcon
               ? IconButton(
                   icon: const Icon(Icons.delete_outline),
+                  color: Colors.white60,
                   onPressed: () =>
                       deleteMethod(widget.collectionName, widget.docId),
                 )
               : IconButton(
-                  icon: const Icon(Icons.mail_outline),
+                  icon: const Icon(
+                    Icons.mail_outline,
+                    color: Colors.white60,
+                  ),
                   onPressed: () async {
-                    print(widget.docId['email']);
+                    try {
 
-                    final Uri url = Uri.parse("mailto:$widget.docId['email']");
-                    if (!await launchUrl(url)) {
-                    throw Exception('Could not launch $url');
+
+
+                      final Uri url =
+                      Uri.parse("mailto:$widget.docId['email']");
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(url);
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Error $e"),
+                      ));
                     }
-
                   },
                 ),
           collapsedBackgroundColor: Colors.black26,
