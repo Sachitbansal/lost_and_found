@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../../../constants.dart';
-import '../../../controllers/MenuAppController.dart';
+import '../../constants.dart';
+import '../../controllers/MenuAppController.dart';
 
 class RecentFoundItems extends StatefulWidget {
   const RecentFoundItems({

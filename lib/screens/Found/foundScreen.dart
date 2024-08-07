@@ -13,7 +13,7 @@ import '../../controllers/responsive.dart';
 import '../../widgets.dart';
 import '../Home/components/category.dart';
 import '../Home/components/header.dart';
-import '../Home/components/recentFoundItems.dart';
+import 'recentFoundItems.dart';
 
 class AddFoundScreen extends StatelessWidget {
   const AddFoundScreen({super.key});
@@ -177,7 +177,7 @@ class _AddFoundDataState extends State<AddFoundData> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$error'),
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
         ),
       );
     }

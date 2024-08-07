@@ -4,8 +4,8 @@ import '../../constants.dart';
 import '../../controllers/MenuAppController.dart';
 import '../../controllers/responsive.dart';
 import 'components/header.dart';
-import 'components/recentFoundItems.dart';
-import 'components/recentLostItems.dart';
+import '../Found/recentFoundItems.dart';
+import '../Lost/recentLostItems.dart';
 import 'components/category.dart';
 
 class HomeScreen extends StatelessWidget {

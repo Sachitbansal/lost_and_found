@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import '../../../constants.dart';
-import '../../../controllers/MenuAppController.dart';
-import '../../../models/recentLostItemData.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../constants.dart';
+import '../../controllers/MenuAppController.dart';
 
 class RecentLostItems extends StatefulWidget {
   const RecentLostItems({
@@ -162,15 +161,23 @@ class _LostItemsListState extends State<LostItemsList> {
         borderRadius: BorderRadius.circular(10),
         child: ExpansionTile(
           trailing: widget.deleteIcon
-              ? GestureDetector(
-                  onTap: () =>
+              ? IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: () =>
                       deleteMethod(widget.collectionName, widget.docId),
-                  child: const Icon(
-                    Icons.delete_outline,
-                    color: Colors.white60,
-                  ),
                 )
-              : null,
+              : IconButton(
+                  icon: const Icon(Icons.mail_outline),
+                  onPressed: () async {
+                    print(widget.docId['email']);
+
+                    final Uri url = Uri.parse("mailto:$widget.docId['email']");
+                    if (!await launchUrl(url)) {
+                    throw Exception('Could not launch $url');
+                    }
+
+                  },
+                ),
           collapsedBackgroundColor: Colors.black26,
           title: Text(widget.docId['title'], maxLines: 2),
           subtitle: Text(

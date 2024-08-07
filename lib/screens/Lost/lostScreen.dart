@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lost_and_found/screens/Home/components/recentLostItems.dart';
+import 'package:lost_and_found/screens/Lost/recentLostItems.dart';
 import 'package:provider/provider.dart';
 import '../../constants.dart';
 import '../../controllers/MenuAppController.dart';

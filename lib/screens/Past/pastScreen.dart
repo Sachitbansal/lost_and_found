@@ -6,8 +6,8 @@ import '../../controllers/MenuAppController.dart';
 import '../../controllers/responsive.dart';
 import '../Home/components/category.dart';
 import '../Home/components/header.dart';
-import '../Home/components/recentFoundItems.dart';
-import '../Home/components/recentLostItems.dart';
+import '../Found/recentFoundItems.dart';
+import '../Lost/recentLostItems.dart';
 
 class PastScreen extends StatefulWidget {
   const PastScreen({super.key});
