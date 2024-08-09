@@ -93,67 +93,39 @@ class _AddFoundDataState extends State<AddFoundData> {
     super.dispose();
   }
 
-  Future<void> addLost(String category) async {
-    CollectionReference lostData =
-        FirebaseFirestore.instance.collection("Found");
-    return lostData.add({
-      'title': titleControllerLost.text,
-      'description': descriptionControllerLost.text,
-      'category': categoryLost,
-      'name': currentUser?.displayName,
-      'email': currentUser?.email,
-      'phone': currentUser?.phoneNumber
-    }).then(
-      (value) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Added Successfully'),
-          ),
-        );
-      },
-    );
-  }
-
-  selectFile(bool imageFrom) async {
-    // try {
-    //   bool isGranted = await Permission.mediaLibrary.status.isGranted;
-    //
-    //   if (!isGranted) {
-    //     isGranted = await Permission.mediaLibrary.request().isGranted;
-    //     print("Permission nahi hai");
-    //   } else {
-    //     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
-    //
-    //     if (fileResult != null) {
-    //       selectedFile = fileResult.files.first.name;
-    //       selectedImageByte = fileResult.files.first.bytes;
-    //       uploadFile();
-    //     }
-    //     print(selectedFile);
-    //   }
-    // } catch (error) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text("Dikkat $error"),
-    //       // duration: Duration(milliseconds: 300),
-    //     ),
-    //   );
-    // }
-
+  selectFile() async {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
 
-    final auth = FirebaseAuth.instance.currentUser?.email;
-    print(auth);
-
     if (fileResult != null) {
-      selectedFile = fileResult.files.first.name;
-      selectedImageByte = fileResult.files.first.bytes;
-      // uploadFile();
+
+      try {
+        selectedFile = fileResult.files.first.name;
+        selectedImageByte = fileResult.files.first.bytes;
+        // uploadFile();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Image Selected"),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error: $e"),
+          ),
+        );
+      }
+
+
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("No Image Selected"),
+        ),
+      );
     }
-    print(selectedFile);
   }
 
-  Future<void> uploadFile() async {
+  Future<String> uploadFile() async {
     try {
       final imgId = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -173,16 +145,52 @@ class _AddFoundDataState extends State<AddFoundData> {
           );
         },
       );
+      return await reference.getDownloadURL();
     } catch (error) {
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$error'),
-          duration: const Duration(milliseconds: 300),
+        ),
+      );
+
+      return 'Error';
+    }
+  }
+
+  Future<void> addLost(String category) async {
+
+    final String imageUrl = await uploadFile();
+
+    if (imageUrl != 'Error') {
+      CollectionReference lostData =
+      FirebaseFirestore.instance.collection("Found");
+      return lostData.add({
+        'title': titleControllerLost.text,
+        'description': descriptionControllerLost.text,
+        'category': categoryLost,
+        'name': currentUser?.displayName,
+        'email': currentUser?.email,
+        'phone': currentUser?.phoneNumber,
+        'imageUrl': imageUrl,
+      }).then(
+            (value) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Added Successfully'),
+            ),
+          );
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Error Occurred in Uploading Image"),
         ),
       );
     }
 
-    // return await reference.getDownloadURL();
+
   }
 
   @override
@@ -272,7 +280,7 @@ class _AddFoundDataState extends State<AddFoundData> {
             onTap: () async {
               // await context.read<MenuAppController>().pickImage();
               // print(context.watch<MenuAppController>().pickedImaged);
-              selectFile(true);
+              selectFile();
               // Image.memory(selectedImageByte);
             },
           ),

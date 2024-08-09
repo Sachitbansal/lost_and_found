@@ -82,8 +82,8 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
 
                           if (data.contains(search) && search != '') {
                             return ItemsBlock(
-                              asset: const [
-                                "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
+                              asset: [
+                                storeDocs[i]['imageUrl']
                               ],
                               share: null,
                               onTap: null,
@@ -95,8 +95,8 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                             );
                           } else if (search == '') {
                             return ItemsBlock(
-                              asset: const [
-                                "https://cdn.pixabay.com/photo/2023/03/06/04/26/calculator-7832583_640.png"
+                              asset: [
+                                storeDocs[i]['imageUrl']
                               ],
                               docId: storeDocs[i],
                               share: null,
