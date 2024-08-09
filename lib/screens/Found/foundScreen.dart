@@ -97,7 +97,6 @@ class _AddFoundDataState extends State<AddFoundData> {
     FilePickerResult? fileResult = await FilePicker.platform.pickFiles();
 
     if (fileResult != null) {
-
       try {
         selectedFile = fileResult.files.first.name;
         selectedImageByte = fileResult.files.first.bytes;
@@ -113,8 +112,6 @@ class _AddFoundDataState extends State<AddFoundData> {
           ),
         );
       }
-
-
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -146,7 +143,6 @@ class _AddFoundDataState extends State<AddFoundData> {
       );
       return await reference.getDownloadURL();
     } catch (error) {
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('$error'),
@@ -164,7 +160,7 @@ class _AddFoundDataState extends State<AddFoundData> {
 
     if (imageUrl != 'Error') {
       CollectionReference lostData =
-      FirebaseFirestore.instance.collection("Found");
+          FirebaseFirestore.instance.collection("Found");
       return lostData.add({
         'title': titleControllerLost.text,
         'description': descriptionControllerLost.text,
@@ -174,8 +170,8 @@ class _AddFoundDataState extends State<AddFoundData> {
         'phone': currentUser?.phoneNumber,
         'imageUrl': imageUrl,
       }).then(
-            (value) {
-              context.read<MenuAppController>().changeLoading(false);
+        (value) {
+          context.read<MenuAppController>().changeLoading(false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Added Successfully'),
@@ -191,8 +187,6 @@ class _AddFoundDataState extends State<AddFoundData> {
         ),
       );
     }
-
-
   }
 
   @override
@@ -226,7 +220,6 @@ class _AddFoundDataState extends State<AddFoundData> {
                 onPressed: () async {
                   if (titleControllerLost.text == "" ||
                       descriptionControllerLost.text == "") {
-
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Please fill all fields'),
@@ -238,7 +231,7 @@ class _AddFoundDataState extends State<AddFoundData> {
                         content: Text('Please select Image of Found item'),
                       ),
                     );
-                  }else {
+                  } else {
                     try {
                       await addLost(categoryLost);
                     } catch (error) {
@@ -271,17 +264,21 @@ class _AddFoundDataState extends State<AddFoundData> {
           const SizedBox(
             height: defaultPadding,
           ),
-          context.watch<MenuAppController>().loading ? const Center(child: CircularProgressIndicator(),) : CustomTextField(
-            labelText: "Description",
-            maxLines: 5,
-            titleController: descriptionControllerLost,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a description';
-              }
-              return null;
-            },
-          ),
+          context.watch<MenuAppController>().loading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : CustomTextField(
+                  labelText: "Description",
+                  maxLines: 5,
+                  titleController: descriptionControllerLost,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a description';
+                    }
+                    return null;
+                  },
+                ),
           ButtonWithText(
             bgColor: primaryColor,
             fontColor: Colors.white70,
