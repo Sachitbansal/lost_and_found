@@ -75,7 +75,7 @@ class AddFoundData extends StatefulWidget {
 
 class _AddFoundDataState extends State<AddFoundData> {
   late String categoryLost = 'None';
-  late var selectedImageByte;
+  dynamic selectedImageByte = 'None';
   UploadTask? uploadTask;
 
   final User? currentUser = FirebaseAuth.instance.currentUser;
@@ -101,10 +101,9 @@ class _AddFoundDataState extends State<AddFoundData> {
       try {
         selectedFile = fileResult.files.first.name;
         selectedImageByte = fileResult.files.first.bytes;
-        // uploadFile();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Image Selected"),
+          SnackBar(
+            content: Text(selectedFile),
           ),
         );
       } catch (e) {
@@ -159,6 +158,7 @@ class _AddFoundDataState extends State<AddFoundData> {
   }
 
   Future<void> addLost(String category) async {
+    context.read<MenuAppController>().changeLoading(true);
 
     final String imageUrl = await uploadFile();
 
@@ -175,6 +175,7 @@ class _AddFoundDataState extends State<AddFoundData> {
         'imageUrl': imageUrl,
       }).then(
             (value) {
+              context.read<MenuAppController>().changeLoading(false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Added Successfully'),
@@ -183,6 +184,7 @@ class _AddFoundDataState extends State<AddFoundData> {
         },
       );
     } else {
+      context.read<MenuAppController>().changeLoading(false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Error Occurred in Uploading Image"),
@@ -224,12 +226,19 @@ class _AddFoundDataState extends State<AddFoundData> {
                 onPressed: () async {
                   if (titleControllerLost.text == "" ||
                       descriptionControllerLost.text == "") {
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Please fill all fields'),
                       ),
                     );
-                  } else {
+                  } else if (selectedImageByte == 'None') {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please select Image of Found item'),
+                      ),
+                    );
+                  }else {
                     try {
                       await addLost(categoryLost);
                     } catch (error) {
@@ -262,7 +271,7 @@ class _AddFoundDataState extends State<AddFoundData> {
           const SizedBox(
             height: defaultPadding,
           ),
-          CustomTextField(
+          context.watch<MenuAppController>().loading ? const Center(child: CircularProgressIndicator(),) : CustomTextField(
             labelText: "Description",
             maxLines: 5,
             titleController: descriptionControllerLost,

@@ -20,6 +20,7 @@ class MenuAppController extends ChangeNotifier {
 
   int _pageIndex = 0;
   String _search = '';
+  bool _loading = false;
 
   final List<String> _headerTitle = [
     "Home",
@@ -60,6 +61,7 @@ class MenuAppController extends ChangeNotifier {
 
   String get selectedCategory => _selectedCategory;
   String get search => _search;
+  bool get loading => _loading;
 
   List<Widget> get mainScreenWidgets => _mainScreenWidgets;
 
@@ -77,6 +79,11 @@ class MenuAppController extends ChangeNotifier {
   void changeSearch (String search) {
     _search = search;
 
+    notifyListeners();
+  }
+
+  void changeLoading (bool loading) {
+    _loading = loading;
     notifyListeners();
   }
 
