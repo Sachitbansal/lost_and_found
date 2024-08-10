@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../constants.dart';
 import '../../../controllers/MenuAppController.dart';
 
 class SideMenu extends StatelessWidget {
@@ -49,9 +50,46 @@ class SideMenu extends StatelessWidget {
             title: "Logout",
             icon: Icons.logout_outlined,
             press: () {
-              FirebaseAuth.instance.currentUser?.delete();
-              FirebaseAuth.instance.signOut();
 
+              showDialog<void>(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    backgroundColor: bgColor,
+                    title: context.watch<MenuAppController>().loading
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Text('Confirm Logout'),
+                    actions: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          TextButton(
+                            child: const Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              FirebaseAuth.instance.currentUser?.delete();
+                              FirebaseAuth.instance.signOut().whenComplete(() {
+                                Navigator.of(context).pop();
+                              });
+                            },
+                            child: const Text(
+                              'Logout',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],
@@ -83,7 +121,9 @@ class DrawerListTile extends StatelessWidget {
       ),
       title: Row(
         children: [
-          const SizedBox(width: 10,),
+          const SizedBox(
+            width: 10,
+          ),
           Text(
             title,
             style: const TextStyle(color: Colors.white70),

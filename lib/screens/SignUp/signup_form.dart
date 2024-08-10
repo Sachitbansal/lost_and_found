@@ -55,7 +55,8 @@ class SignUpForm extends StatelessWidget {
                   ),
                   const Text(
                     "Login With Student ID",
-                    style: TextStyle(color: kPrimaryColor, fontSize: 20),
+                    maxLines: 2,
+                    style: TextStyle(color: kPrimaryColor, fontSize: 20, ),
                   ),
                   Opacity(
                     opacity: 0,

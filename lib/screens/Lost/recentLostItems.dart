@@ -129,6 +129,46 @@ class LostItemsList extends StatefulWidget {
 class _LostItemsListState extends State<LostItemsList> {
   @override
   Widget build(BuildContext context) {
+    Future<void> confirmationDialog(
+        {required String confirmDialog,
+        void Function()? onPressed,
+        required String proceedButton}) async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: bgColor,
+            title: context.watch<MenuAppController>().loading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Text(confirmDialog),
+            actions: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    onPressed: onPressed,
+                    child: Text(
+                      proceedButton,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     Future<void> deleteMethod(String collectionName, dynamic docId) async {
       try {
         await FirebaseFirestore.instance
@@ -164,8 +204,15 @@ class _LostItemsListState extends State<LostItemsList> {
               ? IconButton(
                   icon: const Icon(Icons.delete_outline),
                   color: Colors.white60,
-                  onPressed: () =>
-                      deleteMethod(widget.collectionName, widget.docId),
+                  onPressed: () => confirmationDialog(
+                      confirmDialog: "Confirm Delete?",
+                      proceedButton: "Delete",
+                      onPressed: () {
+                        deleteMethod(widget.collectionName, widget.docId)
+                            .whenComplete(() {
+                          Navigator.of(context).pop();
+                        });
+                      }),
                 )
               : IconButton(
                   icon: const Icon(
@@ -174,9 +221,8 @@ class _LostItemsListState extends State<LostItemsList> {
                   ),
                   onPressed: () async {
                     try {
-
                       final Uri url =
-                      Uri.parse("mailto:${widget.docId['email']}");
+                          Uri.parse("mailto:${widget.docId['email']}");
                       if (await canLaunchUrl(url)) {
                         await launchUrl(url);
                       }

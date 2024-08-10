@@ -179,6 +179,45 @@ class _ItemsBlockState extends State<ItemsBlock> {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> confirmationDialog(
+        {required String confirmDialog,
+        void Function()? onPressed,
+        required String proceedButton}) async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: bgColor,
+            title: context.watch<MenuAppController>().loading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Text(confirmDialog),
+            actions: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    onPressed: onPressed,
+                    child: Text(
+                      proceedButton,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     Future<void> deleteMethod(CollectionReference ref, dynamic docId) async {
       try {
@@ -215,7 +254,6 @@ class _ItemsBlockState extends State<ItemsBlock> {
             .delete()
             .then(
           (doc) {
-
             // context.read<MenuAppController>().changeLoading(false);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -310,7 +348,18 @@ class _ItemsBlockState extends State<ItemsBlock> {
                               Icons.delete_outline,
                               color: Colors.white60,
                             ),
-                            onPressed: () => deleteImage(ref, widget.docId),
+                            onPressed: () => confirmationDialog(
+                                confirmDialog: "Confirm Delete?",
+                                proceedButton: "Delete",
+                                onPressed: () {
+                                  deleteImage(ref, widget.docId)
+                                      .whenComplete(() {
+                                    Navigator.of(context).pop();
+                                  });
+                                }),
+                            // deleteImage(ref, widget.docId).whenComplete(() {
+                            // TODO: Add Loading screen for deleting
+                            // }),
                           )
                         ],
                       ),
