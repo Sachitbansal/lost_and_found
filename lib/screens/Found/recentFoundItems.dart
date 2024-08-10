@@ -182,11 +182,11 @@ class _ItemsBlockState extends State<ItemsBlock> {
 
     Future<void> deleteMethod(CollectionReference ref, dynamic docId) async {
       try {
-        context.read<MenuAppController>().changeLoading(true);
+        // context.read<MenuAppController>().changeLoading(true);
 
         await ref.doc(docId['id']).delete().then(
           (doc) {
-            context.read<MenuAppController>().changeLoading(false);
+            // context.read<MenuAppController>().changeLoading(false);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("Item Deleted Successfully"),
@@ -196,7 +196,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
           },
         );
       } catch (e) {
-        context.read<MenuAppController>().changeLoading(false);
+        // context.read<MenuAppController>().changeLoading(false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Error $e"),
@@ -208,7 +208,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
 
     Future<void> deleteImage(CollectionReference ref, dynamic docId) async {
       try {
-        context.read<MenuAppController>().changeLoading(true);
+        // context.read<MenuAppController>().changeLoading(true);
 
         await FirebaseStorage.instance
             .refFromURL(docId['imageUrl'])
@@ -216,7 +216,6 @@ class _ItemsBlockState extends State<ItemsBlock> {
             .then(
           (doc) {
 
-            print("hogya");
             // context.read<MenuAppController>().changeLoading(false);
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -225,11 +224,11 @@ class _ItemsBlockState extends State<ItemsBlock> {
               ),
             );
 
-            // deleteMethod(ref, docId);
+            deleteMethod(ref, docId);
           },
         );
       } catch (e) {
-        context.read<MenuAppController>().changeLoading(false);
+        // context.read<MenuAppController>().changeLoading(false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Error $e"),
