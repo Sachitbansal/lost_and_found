@@ -191,7 +191,6 @@ class _LostItemsListState extends State<LostItemsList> {
             );
       } catch (e) {
         print("Dikkat $e");
-        print(docId);
       }
     }
 
