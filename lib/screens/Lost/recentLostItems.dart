@@ -24,7 +24,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
     final int pageIndex = context.watch<MenuAppController>().pageIndex;
 
     final Stream<QuerySnapshot> lostItemData = FirebaseFirestore.instance
-        .collection(pageIndex == 3 ? 'PastLost' : 'Dadi')
+        .collection(pageIndex == 3 ? 'Dadi' : 'Dadi')
         .snapshots();
 
     return Container(
@@ -78,7 +78,27 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                               storeDocs[i]['description'];
                           final String search =
                               context.watch<MenuAppController>().search;
-                          if (data.contains(search) && search != '') {
+
+                          bool show(bool past, int index) {
+                            if (index != 3) {
+                              if (!past) {
+                                return true;
+                              } else {
+                                return false;
+                              }
+                            }
+                            else {
+                              if (past) {
+                                return true;
+                              } else {
+                                return false;
+                              }
+                            }
+                          }
+
+                          if (data.contains(search) &&
+                              search != '' &&
+                              show(storeDocs[i]['past'], pageIndex)) {
                             return LostItemsList(
                               docId: storeDocs[i],
                               collectionName:
@@ -86,7 +106,8 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                               deleteIcon: email == storeDocs[i]['email'] &&
                                   pageIndex != 3,
                             );
-                          } else if (search == '') {
+                          } else if (search == '' &&
+                              show(storeDocs[i]['past'], pageIndex)) {
                             return LostItemsList(
                               docId: storeDocs[i],
                               collectionName:

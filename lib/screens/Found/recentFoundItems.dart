@@ -276,6 +276,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
       }
     }
 
+
     return Padding(
       padding: const EdgeInsets.all(defaultPadding / 2),
       child: GestureDetector(
@@ -360,6 +361,15 @@ class _ItemsBlockState extends State<ItemsBlock> {
                             // deleteImage(ref, widget.docId).whenComplete(() {
                             // TODO: Add Loading screen for deleting
                             // }),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.check),
+                            onPressed: () => confirmationDialog(
+                                confirmDialog: "Move to Past Items?",
+                                proceedButton: "Move",
+                                onPressed: () {
+                                  //TODO: Update past items to true
+                                }),
                           )
                         ],
                       ),
