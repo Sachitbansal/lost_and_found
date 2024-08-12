@@ -23,9 +23,8 @@ class _RecentLostItemsState extends State<RecentLostItems> {
   Widget build(BuildContext context) {
     final int pageIndex = context.watch<MenuAppController>().pageIndex;
 
-    final Stream<QuerySnapshot> lostItemData = FirebaseFirestore.instance
-        .collection('Lost')
-        .snapshots();
+    final Stream<QuerySnapshot> lostItemData =
+        FirebaseFirestore.instance.collection('Lost').snapshots();
 
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
@@ -86,8 +85,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                               } else {
                                 return false;
                               }
-                            }
-                            else {
+                            } else {
                               if (past) {
                                 return true;
                               } else {
@@ -221,19 +219,32 @@ class _LostItemsListState extends State<LostItemsList> {
         borderRadius: BorderRadius.circular(10),
         child: ExpansionTile(
           trailing: widget.deleteIcon
-              ? IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  color: Colors.white60,
-                  onPressed: () => confirmationDialog(
-                      confirmDialog: "Confirm Delete?",
-                      proceedButton: "Delete",
-                      onPressed: () {
-                        deleteMethod(widget.collectionName, widget.docId)
-                            .whenComplete(() {
-                          Navigator.of(context).pop();
-                        });
-                      }),
-                )
+              ? Column(
+                children: [
+                  // IconButton(
+                  //     icon: const Icon(Icons.delete_outline),
+                  //     color: Colors.white60,
+                  //     onPressed: () => confirmationDialog(
+                  //         confirmDialog: "Confirm Delete?",
+                  //         proceedButton: "Delete",
+                  //         onPressed: () {
+                  //           deleteMethod(widget.collectionName, widget.docId)
+                  //               .whenComplete(() {
+                  //             Navigator.of(context).pop();
+                  //           });
+                  //         }),
+                  //   ),
+                  IconButton(
+                    icon: const Icon(Icons.check),
+                    onPressed: () => confirmationDialog(
+                        confirmDialog: "Move to Past Items?",
+                        proceedButton: "Move",
+                        onPressed: () {
+                          //TODO: Update past items to true
+                        }),
+                  )
+                ],
+              )
               : IconButton(
                   icon: const Icon(
                     Icons.mail_outline,
@@ -254,7 +265,12 @@ class _LostItemsListState extends State<LostItemsList> {
                   },
                 ),
           collapsedBackgroundColor: Colors.black26,
-          title: Text(widget.docId['title'], maxLines: 2),
+          title: Text(
+            widget.docId['title'],
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+          ),
           subtitle: Text(
             widget.docId['name'],
             style: const TextStyle(fontSize: 13, color: Colors.white70),

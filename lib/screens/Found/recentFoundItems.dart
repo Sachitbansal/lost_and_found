@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../constants.dart';
@@ -316,9 +315,9 @@ class _ItemsBlockState extends State<ItemsBlock> {
                             overflow: TextOverflow.ellipsis,
                             softWrap: false,
                             maxLines: 2,
-                            style: GoogleFonts.play(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
+                            style: const TextStyle(
+                              // color: Colors.white,
+                              // fontWeight: FontWeight.w600,
                               fontSize: 16,
                             ),
                           ),
@@ -330,9 +329,9 @@ class _ItemsBlockState extends State<ItemsBlock> {
                             softWrap: false,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.play(
-                              color: Colors.grey,
-                              fontSize: 14,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 13,
                             ),
                           ),
                           const SizedBox(
@@ -342,7 +341,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
                       ),
                     ),
                     if (widget.deleteIcon)
-                      Column(
+                      Row(
                         children: [
                           IconButton(
                             icon: const Icon(
@@ -374,29 +373,25 @@ class _ItemsBlockState extends State<ItemsBlock> {
                         ],
                       ),
                     if (!widget.deleteIcon)
-                      Column(
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.mail_outline,
-                              color: Colors.white60,
-                            ),
-                            onPressed: () async {
-                              try {
-                                final Uri url = Uri.parse(
-                                    "mailto:${widget.docId['email']}");
-                                if (await canLaunchUrl(url)) {
-                                  await launchUrl(url);
-                                }
-                              } catch (e) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(
-                                  content: Text("Error $e"),
-                                ));
-                              }
-                            },
-                          )
-                        ],
+                      IconButton(
+                        icon: const Icon(
+                          Icons.mail_outline,
+                          color: Colors.white60,
+                        ),
+                        onPressed: () async {
+                          try {
+                            final Uri url = Uri.parse(
+                                "mailto:${widget.docId['email']}");
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url);
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(SnackBar(
+                              content: Text("Error $e"),
+                            ));
+                          }
+                        },
                       ),
                     const SizedBox(
                       width: 10,
