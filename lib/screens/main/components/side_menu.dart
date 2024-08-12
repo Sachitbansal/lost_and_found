@@ -16,7 +16,7 @@ class SideMenu extends StatelessWidget {
       child: ListView(
         children: [
           DrawerHeader(
-            child: Image.asset("assets/images/logo.jpg"),
+            child: Image.network("https://firebasestorage.googleapis.com/v0/b/lost-and-found-3d66f.appspot.com/o/Logo.jpg?alt=media&token=b45dcee6-918c-4143-a615-4b7f2bc53b0a"),
           ),
           DrawerListTile(
             title: "Home",
