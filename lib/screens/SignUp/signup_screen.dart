@@ -45,7 +45,7 @@ class SignUpScreen extends StatelessWidget {
                       width: 450,
                       child: SignUpForm(),
                     ),
-                    SizedBox(height: defaultPadding / 2),
+                    const SizedBox(height: defaultPadding / 2),
                   ],
                 ),
               )

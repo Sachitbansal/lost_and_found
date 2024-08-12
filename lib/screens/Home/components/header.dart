@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -102,11 +101,6 @@ class _SearchFieldState extends State<SearchField> {
 
   @override
   Widget build(BuildContext context) {
-
-    final int pageIndex = context.watch<MenuAppController>().pageIndex;
-
-    final Stream<QuerySnapshot> lostItemData =
-    FirebaseFirestore.instance.collection(pageIndex == 3 ? 'PastLost' : 'Dadi').snapshots();
 
     return TextField(
       controller: searchController,

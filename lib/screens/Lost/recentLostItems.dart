@@ -24,7 +24,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
     final int pageIndex = context.watch<MenuAppController>().pageIndex;
 
     final Stream<QuerySnapshot> lostItemData = FirebaseFirestore.instance
-        .collection(pageIndex == 3 ? 'Dadi' : 'Dadi')
+        .collection('Lost')
         .snapshots();
 
     return Container(
@@ -102,7 +102,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                             return LostItemsList(
                               docId: storeDocs[i],
                               collectionName:
-                                  pageIndex == 3 ? 'PastLost' : 'Dadi',
+                                  pageIndex == 3 ? 'PastLost' : 'Lost',
                               deleteIcon: email == storeDocs[i]['email'] &&
                                   pageIndex != 3,
                             );
@@ -111,7 +111,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                             return LostItemsList(
                               docId: storeDocs[i],
                               collectionName:
-                                  pageIndex == 3 ? 'PastLost' : 'Dadi',
+                                  pageIndex == 3 ? 'PastLost' : 'Lost',
                               deleteIcon: email == storeDocs[i]['email'] &&
                                   pageIndex != 3,
                             );

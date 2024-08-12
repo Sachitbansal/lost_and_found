@@ -243,7 +243,7 @@ class _AddState extends State<Add> {
 
   Future<void> addUser() async {
     CollectionReference students =
-        FirebaseFirestore.instance.collection("Dadi");
+        FirebaseFirestore.instance.collection("Lost");
     return students.add(
       {
         'title': titleControllerLost.text,

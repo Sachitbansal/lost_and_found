@@ -33,7 +33,7 @@ class _HomeScreen1State extends State<HomeScreen1> {
 
   Future<void> addUser() async {
     CollectionReference students =
-        FirebaseFirestore.instance.collection("Dadi");
+        FirebaseFirestore.instance.collection("Lost");
     return students.add(
       {
         'title': titleControllerLost.text,
@@ -76,7 +76,7 @@ class _HomeScreen1State extends State<HomeScreen1> {
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> workoutData =
-        FirebaseFirestore.instance.collection("Dadi").snapshots();
+        FirebaseFirestore.instance.collection("Lost").snapshots();
     final Stream<QuerySnapshot> foundData =
         FirebaseFirestore.instance.collection("Found").snapshots();
 

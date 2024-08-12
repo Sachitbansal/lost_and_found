@@ -31,14 +31,15 @@ class _AddLostDataState extends State<AddLostData> {
 
   Future<void> addLost(String category) async {
     CollectionReference lostData =
-    FirebaseFirestore.instance.collection("Dadi");
+    FirebaseFirestore.instance.collection("Lost");
     return lostData.add({
       'title': titleControllerLost.text,
       'description': descriptionControllerLost.text,
       'category': categoryLost,
       'name': currentUser?.displayName,
       'email': currentUser?.email,
-      'phone': currentUser?.phoneNumber
+      'phone': currentUser?.phoneNumber,
+      'past': false,
     }).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

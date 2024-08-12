@@ -1,9 +1,8 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../controllers/MenuAppController.dart';
 import '../../controllers/responsive.dart';
-import '../Home/homeScreen.dart';
 import 'components/side_menu.dart';
 
 class MainScreen extends StatefulWidget {
@@ -14,6 +13,31 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    readUserData();
+  }
+
+  readUserData() async {
+    await notificationPermission();
+  }
+
+  notificationPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
