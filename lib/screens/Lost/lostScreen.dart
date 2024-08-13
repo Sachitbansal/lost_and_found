@@ -28,8 +28,7 @@ class AddLostScreen extends StatelessWidget {
                   flex: 5,
                   child: Column(
                     children: [
-                      context.watch<MenuAppController>().topBlocks[
-                          context.watch<MenuAppController>().pageIndex],
+
                       const SizedBox(height: defaultPadding),
                       const AddLostData(),
                       const SizedBox(height: defaultPadding,),

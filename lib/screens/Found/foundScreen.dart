@@ -32,8 +32,8 @@ class AddFoundScreen extends StatelessWidget {
                   flex: 5,
                   child: Column(
                     children: [
-                      context.watch<MenuAppController>().topBlocks[
-                          context.watch<MenuAppController>().pageIndex],
+                      // context.watch<MenuAppController>().topBlocks[
+                      //     context.watch<MenuAppController>().pageIndex],
                       const SizedBox(height: defaultPadding),
                       const AddFoundData(),
                       const SizedBox(

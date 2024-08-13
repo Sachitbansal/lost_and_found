@@ -34,7 +34,7 @@ class _PastScreenState extends State<PastScreen> {
                   flex: 5,
                   child: Column(
                     children: [
-                      context.watch<MenuAppController>().topBlocks[context.watch<MenuAppController>().pageIndex],
+                      // context.watch<MenuAppController>().topBlocks[context.watch<MenuAppController>().pageIndex],
                       const SizedBox(height: defaultPadding),
                       if (Responsive.isDesktop(context))
                         const Row(

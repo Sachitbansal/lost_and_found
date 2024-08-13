@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
                   flex: 5,
                   child: Column(
                     children: [
-                      context.watch<MenuAppController>().topBlocks[context.watch<MenuAppController>().pageIndex],
+                      context.watch<MenuAppController>().pageIndex == 0 ? context.watch<MenuAppController>().topBlocks[context.watch<MenuAppController>().pageIndex] : Container(),
                       const SizedBox(height: defaultPadding),
                       if (Responsive.isDesktop(context))
                         const Row(
