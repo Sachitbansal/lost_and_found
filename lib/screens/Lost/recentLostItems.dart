@@ -146,6 +146,9 @@ class LostItemsList extends StatefulWidget {
 }
 
 class _LostItemsListState extends State<LostItemsList> {
+  final CollectionReference ref =
+  FirebaseFirestore.instance.collection('Lost');
+
   @override
   Widget build(BuildContext context) {
     Future<void> confirmationDialog(
@@ -240,7 +243,10 @@ class _LostItemsListState extends State<LostItemsList> {
                         confirmDialog: "Move to Past Items?",
                         proceedButton: "Move",
                         onPressed: () {
-                          //TODO: Update past items to true
+                          ref
+                              .doc(widget.docId['id'])
+                              .update({"past": true});
+                          Navigator.pop(context);
                         }),
                   )
                 ],

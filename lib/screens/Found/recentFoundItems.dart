@@ -23,9 +23,8 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
   Widget build(BuildContext context) {
     final int pageIndex = context.watch<MenuAppController>().pageIndex;
 
-    final Stream<QuerySnapshot> foundData = FirebaseFirestore.instance
-        .collection(pageIndex == 3 ? 'PastFound' : 'Found')
-        .snapshots();
+    final Stream<QuerySnapshot> foundData =
+        FirebaseFirestore.instance.collection('Found').snapshots();
     final String? email = FirebaseAuth.instance.currentUser?.email;
 
     return context.watch<MenuAppController>().loading
@@ -84,7 +83,25 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                                 final String search =
                                     context.watch<MenuAppController>().search;
 
-                                if (data.contains(search) && search != '') {
+                                bool show(bool past, int index) {
+                                  if (index != 3) {
+                                    if (!past) {
+                                      return true;
+                                    } else {
+                                      return false;
+                                    }
+                                  } else {
+                                    if (past) {
+                                      return true;
+                                    } else {
+                                      return false;
+                                    }
+                                  }
+                                }
+
+                                if (data.contains(search) &&
+                                    search != '' &&
+                                    show(storeDocs[i]['past'], pageIndex)) {
                                   return ItemsBlock(
                                     asset: [storeDocs[i]['imageUrl']],
                                     share: null,
@@ -95,7 +112,8 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                                     isSelected: (bool value) {},
                                     deleteIcon: email == storeDocs[i]['email'],
                                   );
-                                } else if (search == '') {
+                                } else if (search == '' &&
+                                    show(storeDocs[i]['past'], pageIndex)) {
                                   return ItemsBlock(
                                     asset: [storeDocs[i]['imageUrl']],
                                     docId: storeDocs[i],
@@ -178,6 +196,8 @@ class _ItemsBlockState extends State<ItemsBlock> {
 
   @override
   Widget build(BuildContext context) {
+
+
     Future<void> confirmationDialog(
         {required String confirmDialog,
         void Function()? onPressed,
@@ -218,7 +238,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
       );
     }
 
-    Future<void> deleteMethod(CollectionReference ref, dynamic docId) async {
+    Future<void> deleteMethod(dynamic docId) async {
       try {
         // context.read<MenuAppController>().changeLoading(true);
 
@@ -244,7 +264,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
       }
     }
 
-    Future<void> deleteImage(CollectionReference ref, dynamic docId) async {
+    Future<void> deleteImage(dynamic docId) async {
       try {
         // context.read<MenuAppController>().changeLoading(true);
 
@@ -261,7 +281,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
               ),
             );
 
-            deleteMethod(ref, docId);
+            deleteMethod(docId);
           },
         );
       } catch (e) {
@@ -275,6 +295,30 @@ class _ItemsBlockState extends State<ItemsBlock> {
       }
     }
 
+    Future<void> moveToPast(String docId) async {
+
+      final DocumentReference docRef = FirebaseFirestore.instance.collection("Found").doc(docId);
+
+      try {
+        await docRef.update({"past": true}).then(
+              (value) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Moved to Past"),
+              ),
+            );
+          },
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error $e"),
+            duration: const Duration(milliseconds: 2000),
+          ),
+        );
+      }
+
+    }
 
     return Padding(
       padding: const EdgeInsets.all(defaultPadding / 2),
@@ -316,8 +360,6 @@ class _ItemsBlockState extends State<ItemsBlock> {
                             softWrap: false,
                             maxLines: 2,
                             style: const TextStyle(
-                              // color: Colors.white,
-                              // fontWeight: FontWeight.w600,
                               fontSize: 16,
                             ),
                           ),
@@ -352,7 +394,7 @@ class _ItemsBlockState extends State<ItemsBlock> {
                                 confirmDialog: "Confirm Delete?",
                                 proceedButton: "Delete",
                                 onPressed: () {
-                                  deleteImage(ref, widget.docId)
+                                  deleteImage(widget.docId)
                                       .whenComplete(() {
                                     Navigator.of(context).pop();
                                   });
@@ -367,7 +409,8 @@ class _ItemsBlockState extends State<ItemsBlock> {
                                 confirmDialog: "Move to Past Items?",
                                 proceedButton: "Move",
                                 onPressed: () {
-                                  //TODO: Update past items to true
+                                  moveToPast(widget.docId['id']);
+                                  Navigator.pop(context);
                                 }),
                           )
                         ],
@@ -380,14 +423,13 @@ class _ItemsBlockState extends State<ItemsBlock> {
                         ),
                         onPressed: () async {
                           try {
-                            final Uri url = Uri.parse(
-                                "mailto:${widget.docId['email']}");
+                            final Uri url =
+                                Uri.parse("mailto:${widget.docId['email']}");
                             if (await canLaunchUrl(url)) {
                               await launchUrl(url);
                             }
                           } catch (e) {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text("Error $e"),
                             ));
                           }

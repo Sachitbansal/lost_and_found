@@ -28,7 +28,6 @@ class AddLostScreen extends StatelessWidget {
                   flex: 5,
                   child: Column(
                     children: [
-
                       const SizedBox(height: defaultPadding),
                       const AddLostData(),
                       const SizedBox(height: defaultPadding,),
