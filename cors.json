@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://lost-and-found-3d66f.web.app/"],
+    "method": ["GET"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type"]
+  }
+]
