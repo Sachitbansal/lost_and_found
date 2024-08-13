@@ -99,7 +99,7 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                                   }
                                 }
 
-                                if (data.contains(search) &&
+                                if (data.toLowerCase().contains(search.toLowerCase()) &&
                                     search != '' &&
                                     show(storeDocs[i]['past'], pageIndex)) {
                                   return ItemsBlock(

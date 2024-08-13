@@ -94,7 +94,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                             }
                           }
 
-                          if (data.contains(search) &&
+                          if (data.toLowerCase().contains(search.toLowerCase()) &&
                               search != '' &&
                               show(storeDocs[i]['past'], pageIndex)) {
                             return LostItemsList(
@@ -151,6 +151,7 @@ class _LostItemsListState extends State<LostItemsList> {
 
   @override
   Widget build(BuildContext context) {
+
     Future<void> confirmationDialog(
         {required String confirmDialog,
         void Function()? onPressed,
