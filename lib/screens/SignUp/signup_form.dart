@@ -15,6 +15,7 @@ class SignUpForm extends StatelessWidget {
     GoogleAuthProvider googleProvider = GoogleAuthProvider();
 
     googleProvider.setCustomParameters({
+      'hd' : "students.iitmandi.ac.in",
       'login_hint': 'user@example.com'
     });
 

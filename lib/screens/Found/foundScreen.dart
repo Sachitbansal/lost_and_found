@@ -164,7 +164,6 @@ class _AddFoundDataState extends State<AddFoundData> {
         'category': categoryLost,
         'name': currentUser?.displayName,
         'email': currentUser?.email,
-        'phone': currentUser?.phoneNumber,
         'imageUrl': imageUrl,
       }).then(
         (value) {
