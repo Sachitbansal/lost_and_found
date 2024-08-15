@@ -39,6 +39,7 @@ class _AddLostDataState extends State<AddLostData> {
       'name': currentUser?.displayName,
       'email': currentUser?.email,
       'past': false,
+      'timeStamp': Timestamp.now()
     }).then((value) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
