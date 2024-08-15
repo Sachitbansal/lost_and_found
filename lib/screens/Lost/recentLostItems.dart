@@ -26,6 +26,8 @@ class _RecentLostItemsState extends State<RecentLostItems> {
     final Stream<QuerySnapshot> lostItemData =
         FirebaseFirestore.instance.collection('Lost').snapshots();
 
+    final int selectedLostItem = context.watch<MenuAppController>().selectedLostItem;
+
     return Container(
       padding: const EdgeInsets.all(defaultPadding),
       decoration: const BoxDecoration(
@@ -67,7 +69,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                 height: MediaQuery.of(context).size.height * .46,
                 child: Column(
                   children: [
-                    Expanded(
+                    if (selectedLostItem < 0) Expanded(
                       child: ListView.builder(
                         itemCount: storeDocs.length,
                         itemBuilder: (BuildContext context, int i) {
@@ -97,26 +99,48 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                           if (data.toLowerCase().contains(search.toLowerCase()) &&
                               search != '' &&
                               show(storeDocs[i]['past'], pageIndex)) {
-                            return LostItemsList(
-                              docId: storeDocs[i],
-                              collectionName:
-                                  pageIndex == 3 ? 'PastLost' : 'Lost',
-                              deleteIcon: email == storeDocs[i]['email'] &&
-                                  pageIndex != 3,
+                            return GestureDetector(
+                              onTap: () {
+                                context.read<MenuAppController>().selectLostItem(i);
+                              },
+                              child: LostItemsList(
+                                docId: storeDocs[i],
+                                collectionName:
+                                    pageIndex == 3 ? 'PastLost' : 'Lost',
+                                deleteIcon: email == storeDocs[i]['email'] &&
+                                    pageIndex != 3,
+                              ),
                             );
                           } else if (search == '' &&
                               show(storeDocs[i]['past'], pageIndex)) {
-                            return LostItemsList(
-                              docId: storeDocs[i],
-                              collectionName:
-                                  pageIndex == 3 ? 'PastLost' : 'Lost',
-                              deleteIcon: email == storeDocs[i]['email'] &&
-                                  pageIndex != 3,
+                            return GestureDetector(
+                              onTap: () {
+                                context.read<MenuAppController>().selectLostItem(i);
+                              },
+                              child: LostItemsList(
+                                docId: storeDocs[i],
+                                collectionName:
+                                    pageIndex == 3 ? 'PastLost' : 'Lost',
+                                deleteIcon: email == storeDocs[i]['email'] &&
+                                    pageIndex != 3,
+                              ),
                             );
                           } else {
                             return Container();
                           }
                         },
+                      ),
+                    ) else GestureDetector(
+                      onTap: () => context.read<MenuAppController>().selectLostItem(-1),
+                      child: Column(
+                        children: [
+                          Text(storeDocs[selectedLostItem]['title']),
+                          Text(storeDocs[selectedLostItem]['name']),
+                          Text(storeDocs[selectedLostItem]['email']),
+                          Text(storeDocs[selectedLostItem]['category']),
+                          Text(storeDocs[selectedLostItem]['description']),
+                          Text(storeDocs[selectedLostItem]['timestamp'].toString() ?? ''),
+                        ],
                       ),
                     ),
                   ],
