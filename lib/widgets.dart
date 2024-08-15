@@ -1,29 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lost_and_found/constants.dart';
-
-class Block extends StatelessWidget {
-  final Color color;
-  final String text;
-
-  const Block({required this.color, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: color,
-      child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(color: Colors.white, fontSize: 24),
-        ),
-      ),
-    );
-  }
-}
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'controllers/MenuAppController.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -154,371 +138,288 @@ class ButtonWithText extends StatelessWidget {
   }
 }
 
-class CustomBlockWidget extends StatelessWidget {
-  final String title;
-  final String description;
-  final String category;
-  final String name;
-  final String task;
-
-  CustomBlockWidget({
-    required this.title,
-    required this.name,
-    required this.task,
-    required this.description,
-    required this.category,
+class ItemsBlock extends StatefulWidget {
+  const ItemsBlock({
+    super.key,
+    required this.asset,
+    required this.share,
+    required this.onTap,
+    required this.bookmarkFunction,
+    required this.bookmarkIcon,
+    required this.deleteIcon,
+    required this.isSelected,
+    required this.docId,
+    this.usage,
   });
 
+  final List asset;
+  final dynamic docId;
+  final String? usage;
+  final bool bookmarkIcon, deleteIcon;
+  final void Function()? share, onTap, bookmarkFunction;
+  final ValueChanged<bool> isSelected;
+
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue[900]!, width: 2),
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(
-            "${name} ${task} a ${title}",
-            style: TextStyle(
-              fontSize: 24.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue[900],
-            ),
-          ),
-          SizedBox(height: 10.0),
-          Text(
-            description,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.black54,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 20.0),
-          Text(
-            category,
-            style: TextStyle(
-              fontSize: 16.0,
-              color: Colors.black54,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
+  State<ItemsBlock> createState() => _ItemsBlockState();
 }
 
-class Add extends StatefulWidget {
-  const Add({super.key});
+class _ItemsBlockState extends State<ItemsBlock> {
+  bool isSelected = false;
 
-  @override
-  State<Add> createState() => _AddState();
-}
-
-class _AddState extends State<Add> {
-  final titleControllerLost = TextEditingController();
-  final titleControllerFound = TextEditingController();
-  final descriptionControllerLost = TextEditingController();
-  final descriptionControllerFound = TextEditingController();
-
-  late String categoryLost = 'None';
-  late String categoryFound = 'None';
-
-  @override
-  void dispose() {
-    titleControllerLost.dispose();
-    titleControllerFound.dispose();
-    descriptionControllerLost.dispose();
-    descriptionControllerFound.dispose();
-    super.dispose();
-  }
-
-  bool isLoading = false;
-  final FirebaseAuth auth = FirebaseAuth.instance;
-
-  Future<void> addUser() async {
-    CollectionReference students =
-        FirebaseFirestore.instance.collection("Lost");
-    return students.add(
-      {
-        'title': titleControllerLost.text,
-        'description': descriptionControllerLost.text,
-        'category': categoryLost,
-        'name': auth.currentUser?.displayName,
-      },
-    ).then(
-      (value) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Added Successfully'),
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> addFound() async {
-    CollectionReference students =
-        FirebaseFirestore.instance.collection("Found");
-    return students.add(
-      {
-        'title': titleControllerFound.text,
-        'description': descriptionControllerFound.text,
-        'category': categoryLost,
-        'name': auth.currentUser?.displayName,
-      },
-    ).then(
-      (value) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Added Successfully'),
-          ),
-        );
-      },
-    );
-  }
+  final CollectionReference ref =
+  FirebaseFirestore.instance.collection('Found');
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Report'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              color: Colors.blue[100],
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const FilterTitle(
-                        title: 'What did you loose?',
-                      ),
-                      CustomTextField(
-                        titleController: titleControllerLost,
-                        labelText: 'Title',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter a Title';
-                          }
-                          return null;
-                        },
-                      ),
-                      const FilterTitle(
-                        title: 'Description',
-                      ),
-                      CustomTextField(
-                        maxLines: 4,
-                        titleController: descriptionControllerLost,
-                        labelText: 'Describe the lost item',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter a Title';
-                          }
-                          return null;
-                        },
-                      ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                ButtonWithText(
-                                  onTap: () {
-                                    setState(() {
-                                      categoryLost = 'Personal';
-                                    });
-                                  },
-                                  size: 80,
-                                  title: "Personal",
-                                  fontColor: categoryLost == 'Personal'
-                                      ? Colors.white
-                                      : Colors.blue[300],
-                                  bgColor: categoryLost == 'Personal'
-                                      ? Colors.blue[400]
-                                      : Colors.green[100],
-                                ),
-                                ButtonWithText(
-                                  onTap: () {
-                                    setState(() {
-                                      categoryLost = 'Academic';
-                                    });
-                                  },
-                                  size: 80,
-                                  title: "Academic",
-                                  fontColor: categoryLost == 'Academic'
-                                      ? Colors.white
-                                      : Colors.blue[300],
-                                  bgColor: categoryLost == 'Academic'
-                                      ? Colors.blue[400]
-                                      : Colors.green[100],
-                                ),
-                                ButtonWithText(
-                                  onTap: () {
-                                    setState(() {
-                                      categoryLost = 'Technical';
-                                    });
-                                  },
-                                  size: 80,
-                                  title: "Technical",
-                                  fontColor: categoryLost == 'Technical'
-                                      ? Colors.white
-                                      : Colors.blue[300],
-                                  bgColor: categoryLost == 'Technical'
-                                      ? Colors.blue[400]
-                                      : Colors.green[100],
-                                ),
-                              ],
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color:
-                                      Colors.blue[700]!, // red as border color
-                                ),
-                              ),
-                              child: TextButton(
-                                onPressed: () {
-                                  addUser();
-                                },
-                                child: Icon(Icons.add),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ],
+
+
+    Future<void> confirmationDialog(
+        {required String confirmDialog,
+          void Function()? onPressed,
+          required String proceedButton}) async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: bgColor,
+            title: context.watch<MenuAppController>().loading
+                ? const Center(
+              child: CircularProgressIndicator(),
+            )
+                : Text(confirmDialog),
+            actions: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  TextButton(
+                    onPressed: onPressed,
+                    child: Text(
+                      proceedButton,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    Future<void> deleteMethod(dynamic docId) async {
+      try {
+        // context.read<MenuAppController>().changeLoading(true);
+
+        await ref.doc(docId['id']).delete().then(
+              (doc) {
+            // context.read<MenuAppController>().changeLoading(false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Item Deleted Successfully"),
+                duration: Duration(milliseconds: 2000),
+              ),
+            );
+          },
+        );
+      } catch (e) {
+        // context.read<MenuAppController>().changeLoading(false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error $e"),
+            duration: const Duration(milliseconds: 2000),
+          ),
+        );
+      }
+    }
+
+    Future<void> deleteImage(dynamic docId) async {
+      try {
+        // context.read<MenuAppController>().changeLoading(true);
+
+        await FirebaseStorage.instance
+            .refFromURL(docId['imageUrl'])
+            .delete()
+            .then(
+              (doc) {
+            // context.read<MenuAppController>().changeLoading(false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Image Deleted Successfully"),
+                duration: Duration(milliseconds: 2000),
+              ),
+            );
+
+            deleteMethod(docId);
+          },
+        );
+      } catch (e) {
+        // context.read<MenuAppController>().changeLoading(false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error $e"),
+            duration: const Duration(milliseconds: 2000),
+          ),
+        );
+      }
+    }
+
+    Future<void> moveToPast(String docId) async {
+
+      final DocumentReference docRef = FirebaseFirestore.instance.collection("Found").doc(docId);
+
+      try {
+        await docRef.update({"past": true}).then(
+              (value) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Moved to Past"),
+              ),
+            );
+          },
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error $e"),
+            duration: const Duration(milliseconds: 2000),
+          ),
+        );
+      }
+
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(defaultPadding / 2),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.black26,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                height: 65,
+                width: 65,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    image: NetworkImage(widget.asset[0]),
+                    fit: BoxFit.fitWidth,
                   ),
                 ),
               ),
-            ),
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.pink[100],
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      const FilterTitle(
-                        title: 'What did you find?',
-                      ),
-                      CustomTextField(
-                        titleController: titleControllerFound,
-                        labelText: 'Title',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter a Title';
-                          }
-                          return null;
-                        },
-                      ),
-                      const FilterTitle(
-                        title: 'Description',
-                      ),
-                      CustomTextField(
-                        maxLines: 4,
-                        titleController: descriptionControllerFound,
-                        labelText:
-                            'Describe the found item and where did you find it',
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter a Title';
-                          }
-                          return null;
-                        },
-                      ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                ButtonWithText(
-                                  onTap: () {
-                                    setState(() {
-                                      categoryFound = 'Personal';
-                                    });
-                                  },
-                                  size: 80,
-                                  title: "Personal",
-                                  fontColor: categoryFound == 'Personal'
-                                      ? Colors.white
-                                      : Colors.blue[300],
-                                  bgColor: categoryFound == 'Personal'
-                                      ? Colors.blue[400]
-                                      : Colors.green[100],
-                                ),
-                                ButtonWithText(
-                                  onTap: () {
-                                    setState(() {
-                                      categoryFound = 'Academic';
-                                    });
-                                  },
-                                  size: 80,
-                                  title: "Academic",
-                                  fontColor: categoryFound == 'Academic'
-                                      ? Colors.white
-                                      : Colors.blue[300],
-                                  bgColor: categoryFound == 'Academic'
-                                      ? Colors.blue[400]
-                                      : Colors.green[100],
-                                ),
-                                ButtonWithText(
-                                  onTap: () {
-                                    setState(() {
-                                      categoryFound = 'Technical';
-                                    });
-                                  },
-                                  size: 80,
-                                  title: "Technical",
-                                  fontColor: categoryFound == 'Technical'
-                                      ? Colors.white
-                                      : Colors.blue[300],
-                                  bgColor: categoryFound == 'Technical'
-                                      ? Colors.blue[400]
-                                      : Colors.green[100],
-                                ),
-                              ],
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.docId['title'],
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                            maxLines: 2,
+                            style: const TextStyle(
+                              fontSize: 16,
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color:
-                                      Colors.blue[700]!, // red as border color
-                                ),
-                              ),
-                              child: TextButton(
-                                onPressed: () {
-                                  addFound();
-                                },
-                                child: Icon(Icons.add),
-                              ),
-                            )
-                          ],
-                        ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            widget.docId['name'],
+                            softWrap: false,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 13,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    if (widget.deleteIcon)
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.white60,
+                            ),
+                            onPressed: () => confirmationDialog(
+                                confirmDialog: "Confirm Delete?",
+                                proceedButton: "Delete",
+                                onPressed: () {
+                                  deleteImage(widget.docId)
+                                      .whenComplete(() {
+                                    Navigator.of(context).pop();
+                                  });
+                                }),
+                            // deleteImage(ref, widget.docId).whenComplete(() {
+                            // TODO: Add Loading screen for deleting
+                            // }),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.check),
+                            onPressed: () => confirmationDialog(
+                                confirmDialog: "Move to Past Items?",
+                                proceedButton: "Move",
+                                onPressed: () {
+                                  moveToPast(widget.docId['id']);
+                                  Navigator.pop(context);
+                                }),
+                          )
+                        ],
+                      ),
+                    if (!widget.deleteIcon)
+                      IconButton(
+                        icon: const Icon(
+                          Icons.mail_outline,
+                          color: Colors.white60,
+                        ),
+                        onPressed: () async {
+                          try {
+                            final Uri url =
+                            Uri.parse("mailto:${widget.docId['email']}");
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(url);
+                            }
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("Error $e"),
+                            ));
+                          }
+                        },
+                      ),
+                    const SizedBox(
+                      width: 10,
+                    )
+                  ],
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
