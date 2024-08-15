@@ -165,6 +165,7 @@ class _AddFoundDataState extends State<AddFoundData> {
         'name': currentUser?.displayName,
         'email': currentUser?.email,
         'imageUrl': imageUrl,
+        'past': false,
       }).then(
         (value) {
           context.read<MenuAppController>().changeLoading(false);
