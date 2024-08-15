@@ -6,7 +6,6 @@ import '../../controllers/responsive.dart';
 import 'components/header.dart';
 import '../Found/recentFoundItems.dart';
 import '../Lost/recentLostItems.dart';
-import 'components/category.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
