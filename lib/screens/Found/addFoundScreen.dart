@@ -114,6 +114,9 @@ class _AddFoundDataState extends State<AddFoundData> {
         'timeStamp': Timestamp.now()
       }).then(
             (value) {
+                titleControllerLost.clear();
+              descriptionControllerLost.clear();
+              categoryLost = 'None';
           context.read<MenuAppController>().changeLoading(false);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

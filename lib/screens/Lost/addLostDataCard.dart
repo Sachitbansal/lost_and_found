@@ -41,6 +41,9 @@ class _AddLostDataState extends State<AddLostData> {
       'past': false,
       'timeStamp': Timestamp.now()
     }).then((value) {
+      titleControllerLost.clear();
+      descriptionControllerLost.clear();
+      categoryLost = 'None';
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Added Successfully'),
