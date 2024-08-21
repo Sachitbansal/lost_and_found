@@ -51,8 +51,8 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasError) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Something Went Wrong.'),
+                        SnackBar(
+                          content: Text('Something Went Wrong.: ${snapshot.error}'),
                         ),
                       );
                     }

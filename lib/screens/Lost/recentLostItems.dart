@@ -47,8 +47,8 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
               if (snapshot.hasError) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Something Went Wrong.'),
+                  SnackBar(
+                    content: Text('Something Went Wrong:  ${snapshot.error}'),
                   ),
                 );
               }
