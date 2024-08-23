@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/MenuAppController.dart';
@@ -22,6 +23,7 @@ class _MainScreenState extends State<MainScreen> {
 
   readUserData() async {
     await notificationPermission();
+    // await getToken();
   }
 
   notificationPermission() async {
@@ -35,9 +37,28 @@ class _MainScreenState extends State<MainScreen> {
         criticalAlert: false,
         provisional: false,
         sound: true
-    );
+    ).then((value) async {
+
+      try {
+        if (value.authorizationStatus == AuthorizationStatus.authorized) {
+          String? token = await FirebaseMessaging.instance.getToken();
+          print("Token: $token");
+        } else {
+          print("Gandu Admi");
+        }
+      } catch (e) {
+        print("error: $e");
+      }
+    });
   }
 
+  getToken () async {
+    String? token = await FirebaseMessaging.instance.getToken();
+
+    if (kDebugMode) {
+      print('Registration Token=$token');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
