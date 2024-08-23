@@ -24,7 +24,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
     final int pageIndex = context.watch<MenuAppController>().pageIndex;
 
     final Stream<QuerySnapshot> lostItemData =
-        FirebaseFirestore.instance.collection('Lost').snapshots();
+        FirebaseFirestore.instance.collection('Lost').orderBy("timeStamp", descending: true).snapshots();
 
     final int selectedLostItem = context.watch<MenuAppController>().selectedLostItem;
 
@@ -139,7 +139,7 @@ class _RecentLostItemsState extends State<RecentLostItems> {
                           Text(storeDocs[selectedLostItem]['email']),
                           Text(storeDocs[selectedLostItem]['category']),
                           Text(storeDocs[selectedLostItem]['description']),
-                          Text(storeDocs[selectedLostItem]['timestamp'].toString() ?? ''),
+                          Text(storeDocs[selectedLostItem]['timeStamp'].toString() ?? 'yo'),
                         ],
                       ),
                     ),

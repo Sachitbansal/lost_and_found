@@ -51,9 +51,11 @@ class MenuAppController extends ChangeNotifier {
 
   late String _selectedCategory = 'None';
   late int _selectedLostItem = -1;
+  late int _selectedFoundItem = -1;
 
   int get pageIndex => _pageIndex;
   int get selectedLostItem => _selectedLostItem;
+  int get selectedFoundItem => _selectedFoundItem;
 
   List<Widget> get topBlocks => _topBlocks;
 
@@ -91,6 +93,11 @@ class MenuAppController extends ChangeNotifier {
 
   void selectLostItem (int index) {
     _selectedLostItem = index;
+    notifyListeners();
+  }
+
+  void selectFoundItem (int index) {
+    _selectedFoundItem = index;
     notifyListeners();
   }
 

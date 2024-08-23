@@ -25,8 +25,9 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
     final int pageIndex = context.watch<MenuAppController>().pageIndex;
 
     final Stream<QuerySnapshot> foundData =
-        FirebaseFirestore.instance.collection('Found').snapshots();
+        FirebaseFirestore.instance.collection('Found').orderBy("timeStamp", descending: true).snapshots();
     final String? email = FirebaseAuth.instance.currentUser?.email;
+    final int selectedFoundItem = context.watch<MenuAppController>().selectedFoundItem;
 
     return context.watch<MenuAppController>().loading
         ? const Center(
@@ -73,7 +74,8 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                       height: MediaQuery.of(context).size.height * .46,
                       child: Column(
                         children: [
-                          Expanded(
+                          if (selectedFoundItem < 0)
+                            Expanded(
                             child: ListView.builder(
                               itemCount: storeDocs.length,
                               itemBuilder: (BuildContext context, int i) {
@@ -106,7 +108,7 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                                   return ItemsBlock(
                                     asset: [storeDocs[i]['imageUrl']],
                                     share: null,
-                                    onTap: null,
+                                    onTap: () => context.read<MenuAppController>().selectFoundItem(i),
                                     docId: storeDocs[i],
                                     bookmarkFunction: null,
                                     bookmarkIcon: false,
@@ -119,7 +121,7 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                                     asset: [storeDocs[i]['imageUrl']],
                                     docId: storeDocs[i],
                                     share: null,
-                                    onTap: null,
+                                    onTap:  () => context.read<MenuAppController>().selectFoundItem(i),
                                     bookmarkFunction: null,
                                     bookmarkIcon: false,
                                     isSelected: (bool value) {},
@@ -130,7 +132,20 @@ class _RecentFoundItemsState extends State<RecentFoundItems> {
                                 }
                               },
                             ),
-                          ),
+                          )
+                          else GestureDetector(
+                          onTap: () => context.read<MenuAppController>().selectFoundItem(-1),
+                          child: Column(
+                          children: [
+                          Text(storeDocs[selectedFoundItem]['title']),
+                          Text(storeDocs[selectedFoundItem]['name']),
+                          Text(storeDocs[selectedFoundItem]['email']),
+                          Text(storeDocs[selectedFoundItem]['category']),
+                          Text(storeDocs[selectedFoundItem]['description']),
+                          Text(storeDocs[selectedFoundItem]['timeStamp'].toString() ?? 'yo'),
+                    ],
+                    ),
+                    )
                         ],
                       ),
                     );
